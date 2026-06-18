@@ -9,10 +9,10 @@ export default function Divisions() {
       <div className="container-x">
         <SectionHeading
           eyebrow="Business Divisions"
-          title="Four trading verticals, one global network."
-          intro="From farm-gate agriculture to energy molecules, NTA Group operates across the commodities that move the world economy."
+          title="Six trading verticals, led by chemical fertilizers."
+          intro="From fertilizers and grains to petrochemicals and energy, NTA Group operates across the commodities that feed and fuel the world economy."
         />
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {divisions.map((d, i) => (
             <Reveal key={d.slug} delay={i * 0.09}>
               <DivisionCard division={d} />

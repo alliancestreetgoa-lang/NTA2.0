@@ -6,7 +6,7 @@
  * icon-name strings, division field aliases, grouped hero/about/markets, etc.),
  * keeping all mapping in one place. Edit real content in `company.ts`.
  */
-import { Wheat, Flame, Fuel, Droplets, type LucideIcon } from 'lucide-react'
+import { Wheat, Flame, Fuel, Droplets, FlaskConical, Sprout, type LucideIcon } from 'lucide-react'
 import { company as raw, divisions as rawDivisions } from './company'
 
 const iconMap: Record<string, LucideIcon> = {
@@ -30,7 +30,7 @@ export interface Division {
   operateLabel: string
 }
 
-export const divisions: Division[] = rawDivisions.map((d) => ({
+const mapRaw = (d: (typeof rawDivisions)[number]): Division => ({
   slug: d.slug,
   icon: iconMap[d.icon] ?? Wheat,
   name: d.title,
@@ -42,7 +42,67 @@ export const divisions: Division[] = rawDivisions.map((d) => ({
   operate: d.services,
   tradeLabel: 'What We Trade',
   operateLabel: 'Services & Capabilities',
-}))
+})
+
+const rawBySlug = Object.fromEntries(rawDivisions.map((d) => [d.slug, mapRaw(d)])) as Record<string, Division>
+
+// Chemical Fertilizers — the company's core focus.
+const fertilizers: Division = {
+  slug: 'fertilizers',
+  icon: Sprout,
+  name: 'Chemical Fertilizers Trading',
+  nav: 'Fertilizers',
+  short: 'Urea, DAP, MAP, NPK, potash and ammonia sourced and delivered to importers, blenders and farms worldwide.',
+  tagline: 'Nourishing global agriculture.',
+  overview:
+    'Chemical fertilizers are a core focus for NTA Group. We source nitrogen, phosphate and potash-based fertilizers from major production hubs and deliver them reliably to importers, blenders and agricultural distributors across the world — supporting food security at scale through disciplined sourcing and logistics.',
+  trade: [
+    'Urea',
+    'DAP (Diammonium Phosphate)',
+    'MAP (Monoammonium Phosphate)',
+    'NPK Compounds',
+    'Ammonium Nitrate',
+    'Potash (MOP / SOP)',
+    'Ammonia',
+    'Phosphate Rock',
+    'Sulphur',
+    'Micronutrients',
+  ],
+  operate: [
+    'Global sourcing from major fertilizer hubs',
+    'Bulk & bagged procurement',
+    'Export & import facilitation',
+    'Supply-chain & vessel coordination',
+    'Commodity risk management',
+  ],
+  tradeLabel: 'What We Trade',
+  operateLabel: 'Services & Capabilities',
+}
+
+const petrochemicals: Division = {
+  slug: 'petrochemicals',
+  icon: FlaskConical,
+  name: 'Petrochemicals Trading',
+  nav: 'Petrochemicals',
+  short: 'Methanol, olefins, aromatics and polymers traded across international markets.',
+  tagline: 'The building blocks of industry.',
+  overview:
+    'NTA Group trades a broad slate of petrochemical feedstocks and polymers, connecting producers with manufacturers worldwide. From methanol and olefins to aromatics and polymers, we arbitrage regional supply and demand and coordinate cargo logistics end to end.',
+  trade: ['Methanol', 'Ethylene', 'Propylene', 'Benzene', 'Toluene', 'Xylene (MX / PX)', 'Polyethylene (PE)', 'Polypropylene (PP)', 'PVC', 'Aromatics'],
+  operate: ['International trading', 'Bulk supply contracts', 'Logistics coordination', 'Strategic procurement'],
+  tradeLabel: 'What We Trade',
+  operateLabel: 'Services & Capabilities',
+}
+
+// Fertilizers lead the lineup to reflect the company's focus.
+export const divisions: Division[] = [
+  fertilizers,
+  rawBySlug['grains'],
+  petrochemicals,
+  rawBySlug['crude-oil'],
+  rawBySlug['refined-oil'],
+  rawBySlug['lng'],
+].filter(Boolean) as Division[]
 
 export function divisionBySlug(slug?: string): Division | undefined {
   return divisions.find((d) => d.slug === slug)
@@ -50,7 +110,8 @@ export function divisionBySlug(slug?: string): Division | undefined {
 
 export const hero = {
   headline: raw.heroHeadline,
-  subhead: raw.heroSub,
+  subhead:
+    'A global trading house with a core focus on chemical fertilizers — alongside grains and cereals, petrochemicals, crude oil, refined products and LNG — connecting producers and markets across the world, reliably and at scale.',
   videoSrc: raw.heroVideo,
   poster: raw.heroPoster,
   primaryCta: { label: 'Explore Our Divisions', href: '#divisions' },
@@ -59,8 +120,11 @@ export const hero = {
 
 export const about = {
   eyebrow: 'About NTA Group',
-  heading: raw.about.lead,
-  paragraphs: [raw.about.body],
+  heading: 'A trading house powering the world’s food and energy supply chains.',
+  paragraphs: [
+    raw.about.body,
+    'Chemical fertilizers sit at the heart of our agricultural business. We connect the world’s leading nitrogen, phosphate and potash producers with importers and distributors across emerging and established markets — supporting food security while applying the same rigor to our grains, petrochemical and energy desks.',
+  ],
 }
 
 const U = 'https://images.unsplash.com/photo-'
@@ -108,10 +172,11 @@ export const sustainability = {
 }
 
 export const industries = [
-  'Agriculture',
-  'Energy',
-  'Industrial Trading',
-  'Petroleum Products',
+  'Chemical Fertilizers',
+  'Petrochemicals',
+  'Agriculture & Grains',
+  'Energy & LNG',
+  'Refined & Crude Oil',
   'International Commodity Markets',
 ]
 

@@ -18,8 +18,12 @@ describe('NTA Group site', () => {
     ).toBeInTheDocument()
   })
 
-  it('resolves all four divisions by slug', () => {
-    expect(divisions).toHaveLength(4)
+  it('resolves all six divisions by slug, with fertilizers leading', () => {
+    expect(divisions).toHaveLength(6)
+    expect(divisions[0].slug).toBe('fertilizers')
+    expect(divisions.map((d) => d.slug)).toEqual(
+      expect.arrayContaining(['fertilizers', 'petrochemicals', 'grains', 'crude-oil', 'refined-oil', 'lng']),
+    )
     divisions.forEach((d) => {
       expect(divisionBySlug(d.slug)?.name).toBe(d.name)
     })
