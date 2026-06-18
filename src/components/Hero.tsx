@@ -56,9 +56,9 @@ export default function Hero() {
           />
         )}
 
-        {/* Gradient overlays for legibility */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0a1622]/95 via-[#0a1622]/70 to-[#0a1622]/30" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a1622] via-transparent to-[#0a1622]/40" />
+        {/* Gradient overlays — opaque behind text (left), clear over the globe (right) */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0a1622] from-15% via-[#0a1622]/45 via-45% to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a1622]/60 via-transparent to-transparent" />
       </div>
 
       {/* Content */}

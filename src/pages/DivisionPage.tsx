@@ -67,7 +67,7 @@ export default function DivisionPage() {
 
 function DetailList({ title, items }: { title: string; items: string[] }) {
   return (
-    <div className="h-full rounded-2xl border border-white/8 bg-[#13283f] p-7 sm:p-9">
+    <div className="lg-card h-full p-7 sm:p-9">
       <h2 className="font-display text-xl font-semibold text-white">{title}</h2>
       <div className="mt-5 h-px bg-gradient-to-r from-[#d4af37]/50 to-transparent" />
       <ul className="mt-6 grid gap-3 sm:grid-cols-2">

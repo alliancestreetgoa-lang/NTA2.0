@@ -1,81 +1,39 @@
 import { useEffect, useRef } from 'react'
+import * as THREE from 'three'
 
 /**
- * Animated canvas backdrop: a slowly rotating globe rendered as a dotted world
- * map. A grid of points is tested against coarse continent outlines; land points
- * are projected onto the sphere (orthographic, with axial tilt) and only drawn
- * when front-facing — producing recognizable continents that rotate. Gold trade
- * hubs and arcs sit on top. Self-contained (no deps). Used as the hero's
- * poster/fallback when video is unavailable, on mobile, or under reduced-motion.
+ * Photorealistic 3D Earth (Three.js): day/night shader blend (city lights on the
+ * night side), specular ocean glint, a drifting cloud layer, atmosphere rim glow,
+ * and glowing gold trade-route arcs with traveling pulses. Earth textures are the
+ * public-domain NASA set served (with CORS) from the three.js repo. Falls back to
+ * a no-op where WebGL is unavailable (e.g. jsdom tests). `animate` toggles spin.
  */
 
+const TEX = 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets'
 const D2R = Math.PI / 180
 
-// Coarse continent outlines as [lon, lat] rings. Low fidelity by design — the
-// dotted rendering reads as a world map without needing real geodata.
-const CONTINENTS: [number, number][][] = [
-  // North America
-  [
-    [-159, 64], [-150, 61], [-140, 60], [-130, 56], [-124, 48], [-124, 40], [-118, 33],
-    [-110, 23], [-105, 22], [-97, 16], [-90, 14], [-83, 9], [-81, 18], [-80, 26], [-75, 35],
-    [-70, 42], [-66, 45], [-60, 47], [-56, 51], [-64, 60], [-78, 62], [-95, 60], [-110, 68],
-    [-125, 70], [-140, 70], [-156, 71], [-168, 66], [-159, 64],
-  ],
-  // Greenland
-  [
-    [-45, 60], [-30, 60], [-20, 70], [-25, 80], [-45, 83], [-60, 80], [-55, 70], [-45, 60],
-  ],
-  // South America
-  [
-    [-81, 5], [-78, 0], [-80, -5], [-75, -15], [-70, -20], [-71, -30], [-73, -40], [-74, -50],
-    [-68, -55], [-65, -50], [-62, -40], [-58, -35], [-56, -30], [-48, -25], [-40, -20],
-    [-35, -8], [-35, -5], [-50, 0], [-60, 5], [-70, 10], [-78, 8], [-81, 5],
-  ],
-  // Africa
-  [
-    [-17, 15], [-16, 21], [-9, 30], [0, 34], [10, 36], [20, 32], [30, 31], [34, 28], [35, 22],
-    [43, 12], [51, 12], [42, -5], [40, -15], [35, -22], [27, -33], [20, -35], [18, -30],
-    [12, -18], [9, 0], [3, 5], [-7, 5], [-12, 9], [-17, 15],
-  ],
-  // Europe
-  [
-    [-10, 37], [-9, 43], [-2, 44], [0, 49], [2, 51], [8, 54], [12, 58], [22, 60], [30, 62],
-    [40, 64], [32, 54], [30, 48], [28, 45], [20, 42], [14, 40], [8, 44], [3, 42], [-2, 38], [-10, 37],
-  ],
-  // Asia
-  [
-    [32, 54], [45, 50], [50, 44], [55, 42], [60, 38], [62, 40], [68, 38], [72, 28], [78, 22],
-    [80, 10], [78, 8], [83, 17], [90, 22], [95, 16], [98, 8], [104, 9], [106, 18], [110, 20],
-    [120, 22], [122, 30], [126, 34], [130, 42], [135, 45], [140, 50], [142, 54], [150, 58],
-    [160, 64], [170, 66], [178, 68], [165, 70], [140, 72], [120, 73], [100, 72], [85, 70],
-    [70, 68], [60, 66], [55, 60], [48, 56], [40, 56], [32, 54],
-  ],
-  // India peninsula (sharper)
-  [
-    [70, 24], [73, 18], [76, 10], [78, 8], [80, 13], [82, 18], [85, 20], [88, 22], [80, 25], [73, 24], [70, 24],
-  ],
-  // SE Asia / Indonesia (cluster)
-  [
-    [98, 4], [104, 2], [110, 0], [118, 0], [120, -4], [115, -8], [106, -8], [100, -2], [98, 4],
-  ],
-  // Australia
-  [
-    [114, -22], [122, -18], [130, -12], [137, -12], [142, -11], [145, -16], [150, -24],
-    [153, -28], [150, -38], [143, -39], [135, -35], [129, -32], [120, -34], [115, -30], [114, -22],
-  ],
-]
+function lonLatToVec3(lon: number, lat: number, r: number) {
+  const phi = (90 - lat) * D2R
+  const theta = (lon + 180) * D2R
+  return new THREE.Vector3(
+    -r * Math.sin(phi) * Math.cos(theta),
+    r * Math.cos(phi),
+    r * Math.sin(phi) * Math.sin(theta),
+  )
+}
 
-function inPolygon(lon: number, lat: number, poly: [number, number][]): boolean {
-  let inside = false
-  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-    const xi = poly[i][0]
-    const yi = poly[i][1]
-    const xj = poly[j][0]
-    const yj = poly[j][1]
-    const intersect = yi > lat !== yj > lat && lon < ((xj - xi) * (lat - yi)) / (yj - yi) + xi
-    if (intersect) inside = !inside
-  }
-  return inside
+function makeDotTexture() {
+  const s = 32
+  const cv = document.createElement('canvas')
+  cv.width = cv.height = s
+  const c = cv.getContext('2d')!
+  const g = c.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2)
+  g.addColorStop(0, 'rgba(255,255,255,1)')
+  g.addColorStop(0.5, 'rgba(255,255,255,0.85)')
+  g.addColorStop(1, 'rgba(255,255,255,0)')
+  c.fillStyle = g
+  c.fillRect(0, 0, s, s)
+  return new THREE.CanvasTexture(cv)
 }
 
 export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
@@ -84,180 +42,242 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
 
-    let raf = 0
+    let renderer: THREE.WebGLRenderer
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true })
+    } catch {
+      return
+    }
+    renderer.setClearColor(0x000000, 0)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
+    renderer.outputColorSpace = THREE.SRGBColorSpace
+
+    const scene = new THREE.Scene()
+    const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100)
+    camera.position.set(0, 0, 8)
+
+    const world = new THREE.Group()
+    world.rotation.z = 0.34
+    world.rotation.x = 0.12
+    scene.add(world)
+
+    const globeSpin = new THREE.Group()
+    const cloudSpin = new THREE.Group()
+    world.add(globeSpin, cloudSpin)
+
+    const loader = new THREE.TextureLoader()
+    loader.setCrossOrigin('anonymous')
+    const dayMap = loader.load(`${TEX}/earth_atmos_2048.jpg`)
+    const nightMap = loader.load(`${TEX}/earth_lights_2048.png`)
+    const specMap = loader.load(`${TEX}/earth_specular_2048.jpg`)
+    const cloudMap = loader.load(`${TEX}/earth_clouds_1024.png`)
+    dayMap.colorSpace = THREE.SRGBColorSpace
+    nightMap.colorSpace = THREE.SRGBColorSpace
+    const maxAniso = renderer.capabilities.getMaxAnisotropy()
+    ;[dayMap, nightMap, specMap, cloudMap].forEach((t) => (t.anisotropy = maxAniso))
+
+    const SUN = new THREE.Vector3(0.55, 0.2, 0.92).normalize()
+
+    // Earth — custom shader blending day/night by sun direction, with ocean specular.
+    const earthMat = new THREE.ShaderMaterial({
+      uniforms: {
+        dayMap: { value: dayMap },
+        nightMap: { value: nightMap },
+        specMap: { value: specMap },
+        uSun: { value: SUN },
+        uCamera: { value: camera.position },
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        varying vec3 vNormalW;
+        varying vec3 vWorldPos;
+        void main() {
+          vUv = uv;
+          vNormalW = normalize(mat3(modelMatrix) * normal);
+          vec4 wp = modelMatrix * vec4(position, 1.0);
+          vWorldPos = wp.xyz;
+          gl_Position = projectionMatrix * viewMatrix * wp;
+        }
+      `,
+      fragmentShader: `
+        uniform sampler2D dayMap;
+        uniform sampler2D nightMap;
+        uniform sampler2D specMap;
+        uniform vec3 uSun;
+        uniform vec3 uCamera;
+        varying vec2 vUv;
+        varying vec3 vNormalW;
+        varying vec3 vWorldPos;
+        void main() {
+          vec3 N = normalize(vNormalW);
+          vec3 L = normalize(uSun);
+          float cosA = dot(N, L);
+          float dayAmt = smoothstep(-0.12, 0.25, cosA);
+          vec3 day = texture2D(dayMap, vUv).rgb;
+          vec3 night = texture2D(nightMap, vUv).rgb;
+          float diff = clamp(cosA, 0.0, 1.0);
+          vec3 dayLit = day * (0.55 + 0.75 * diff);
+          float water = texture2D(specMap, vUv).r;
+          vec3 V = normalize(uCamera - vWorldPos);
+          vec3 H = normalize(L + V);
+          float spec = pow(max(dot(N, H), 0.0), 26.0) * water * dayAmt;
+          vec3 col = mix(night * 1.5, dayLit, dayAmt) + vec3(1.0, 0.94, 0.78) * spec * 0.9;
+          float lum = dot(col, vec3(0.299, 0.587, 0.114));
+          col = mix(vec3(lum), col, 1.3); // saturation boost
+          gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
+        }
+      `,
+    })
+    const earth = new THREE.Mesh(new THREE.SphereGeometry(1, 96, 96), earthMat)
+    globeSpin.add(earth)
+
+    // Clouds — fade out on the night side.
+    const cloudMat = new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      uniforms: { map: { value: cloudMap }, uSun: { value: SUN } },
+      vertexShader: `
+        varying vec2 vUv;
+        varying vec3 vNormalW;
+        void main() {
+          vUv = uv;
+          vNormalW = normalize(mat3(modelMatrix) * normal);
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform sampler2D map;
+        uniform vec3 uSun;
+        varying vec2 vUv;
+        varying vec3 vNormalW;
+        void main() {
+          float c = texture2D(map, vUv).r;
+          float lit = smoothstep(-0.2, 0.3, dot(normalize(vNormalW), normalize(uSun)));
+          gl_FragColor = vec4(vec3(1.0), c * (0.12 + 0.88 * lit) * 0.42);
+        }
+      `,
+    })
+    const clouds = new THREE.Mesh(new THREE.SphereGeometry(1.012, 64, 64), cloudMat)
+    cloudSpin.add(clouds)
+
+    // Atmosphere rim glow
+    const atmosphere = new THREE.Mesh(
+      new THREE.SphereGeometry(1.15, 64, 64),
+      new THREE.ShaderMaterial({
+        transparent: true,
+        side: THREE.BackSide,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        uniforms: { uColor: { value: new THREE.Color(0x3f86d4) } },
+        vertexShader: `
+          varying vec3 vNormal;
+          void main() {
+            vNormal = normalize(normalMatrix * normal);
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform vec3 uColor;
+          varying vec3 vNormal;
+          void main() {
+            float i = pow(0.66 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.6);
+            gl_FragColor = vec4(uColor, 1.0) * clamp(i, 0.0, 1.0);
+          }
+        `,
+      }),
+    )
+    world.add(atmosphere)
+
+    // Trade hubs + arcs (gold, on top of the Earth)
+    const hub = { lat: 25.2, lon: 55.3 } // Dubai
+    const spokes = [
+      { lat: 51.9, lon: 4.5 },
+      { lat: 1.3, lon: 103.8 },
+      { lat: 29.8, lon: -95.4 },
+      { lat: 31.2, lon: 121.5 },
+      { lat: 19.1, lon: 72.9 },
+      { lat: 6.5, lon: 3.4 },
+      { lat: 51.5, lon: -0.1 },
+      { lat: 40.7, lon: -74.0 },
+    ]
+    const dotTex = makeDotTexture()
+    ;[hub, ...spokes].forEach((p) => {
+      const sprite = new THREE.Sprite(
+        new THREE.SpriteMaterial({ map: dotTex, color: 0xeac56a, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }),
+      )
+      sprite.position.copy(lonLatToVec3(p.lon, p.lat, 1.02))
+      sprite.scale.setScalar(p === hub ? 0.12 : 0.07)
+      globeSpin.add(sprite)
+    })
+
+    const arcs = spokes.map((p) => {
+      const a = lonLatToVec3(hub.lon, hub.lat, 1)
+      const b = lonLatToVec3(p.lon, p.lat, 1)
+      const mid = a.clone().add(b).multiplyScalar(0.5)
+      mid.normalize().multiplyScalar(1 + 0.15 + a.distanceTo(b) * 0.12)
+      const curve = new THREE.QuadraticBezierCurve3(a, mid, b)
+      const geo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(64))
+      globeSpin.add(
+        new THREE.Line(
+          geo,
+          new THREE.LineBasicMaterial({ color: 0xd4af37, transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending, depthWrite: false }),
+        ),
+      )
+      const pulse = new THREE.Sprite(
+        new THREE.SpriteMaterial({ map: dotTex, color: 0xf0d488, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }),
+      )
+      pulse.scale.setScalar(0.055)
+      globeSpin.add(pulse)
+      return { curve, pulse, speed: 0.12 + Math.random() * 0.12, offset: Math.random() }
+    })
+
     let w = 0
     let h = 0
-    const dpr = Math.min(window.devicePixelRatio || 1, 2)
-    const TILT = 0.36 // axial tilt (~20°)
-
-    const resize = () => {
+    const layout = () => {
       const parent = canvas.parentElement
       w = parent?.clientWidth ?? window.innerWidth
       h = parent?.clientHeight ?? window.innerHeight
-      canvas.width = w * dpr
-      canvas.height = h * dpr
-      canvas.style.width = `${w}px`
-      canvas.style.height = `${h}px`
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      renderer.setSize(w, h, false)
+      camera.aspect = w / h
+      camera.updateProjectionMatrix()
+      const wide = w >= 1024
+      world.scale.setScalar(wide ? 2.7 : Math.min(2.2, (w / 520) * 2))
+      world.position.set(wide ? 2.1 : 0.4, wide ? -0.1 : 0.8, 0)
     }
-    resize()
-    window.addEventListener('resize', resize)
+    layout()
+    window.addEventListener('resize', layout)
 
-    const globe = () => ({ cx: w * 0.72, cy: h * 0.52, r: Math.min(w, h) * 0.42 })
-
-    type Pt = { x: number; y: number; front: boolean; depth: number }
-
-    const project = (lon: number, lat: number, rot: number, g: ReturnType<typeof globe>): Pt => {
-      const a = lon + rot
-      const cosLat = Math.cos(lat)
-      const X = Math.sin(a) * cosLat
-      const Y0 = Math.sin(lat)
-      const Z0 = Math.cos(a) * cosLat
-      const Y = Y0 * Math.cos(TILT) - Z0 * Math.sin(TILT)
-      const Z = Y0 * Math.sin(TILT) + Z0 * Math.cos(TILT)
-      return { x: g.cx + X * g.r, y: g.cy - Y * g.r, front: Z >= -0.02, depth: (Z + 1) / 2 }
-    }
-
-    // Precompute land sample points (lon/lat radians) once. Longitude step widens
-    // toward the poles to keep dot density roughly even on the sphere.
-    const landPoints: [number, number][] = []
-    for (let lat = -78; lat <= 80; lat += 2.6) {
-      const lonStep = 2.6 / Math.max(0.22, Math.cos(lat * D2R))
-      for (let lon = -180; lon <= 180; lon += lonStep) {
-        if (CONTINENTS.some((c) => inPolygon(lon, lat, c))) {
-          landPoints.push([lon * D2R, lat * D2R])
-        }
+    const clock = new THREE.Clock()
+    let raf = 0
+    const loop = () => {
+      const dt = clock.getDelta()
+      if (animate) {
+        globeSpin.rotation.y += dt * 0.05
+        cloudSpin.rotation.y += dt * 0.072
+        arcs.forEach((arc) => {
+          arc.offset = (arc.offset + dt * arc.speed) % 1
+          arc.curve.getPointAt(arc.offset, arc.pulse.position)
+        })
       }
-    }
-
-    // Trade hubs (lon/lat radians) across the visible hemisphere.
-    const hubs = [
-      { lon: -1.15, lat: 0.5 },
-      { lon: -0.45, lat: 0.12 },
-      { lon: 0.25, lat: 0.62 },
-      { lon: 0.95, lat: -0.05 },
-      { lon: -0.7, lat: -0.5 },
-      { lon: 0.1, lat: -0.6 },
-      { lon: 1.35, lat: 0.32 },
-    ]
-
-    const particles = Array.from({ length: 46 }, () => ({
-      x: Math.random(),
-      y: Math.random(),
-      s: Math.random() * 1.6 + 0.4,
-      v: Math.random() * 0.0006 + 0.0002,
-    }))
-
-    const drawFrame = (t: number) => {
-      const g = globe()
-      const rot = animate ? t * 0.00006 : 0.7
-      ctx.clearRect(0, 0, w, h)
-
-      // Background wash
-      const bg = ctx.createLinearGradient(0, 0, 0, h)
-      bg.addColorStop(0, '#0a1622')
-      bg.addColorStop(1, '#0b1f3a')
-      ctx.fillStyle = bg
-      ctx.fillRect(0, 0, w, h)
-
-      // Drifting particles
-      particles.forEach((p) => {
-        if (animate) p.y -= p.v
-        if (p.y < 0) p.y = 1
-        ctx.beginPath()
-        ctx.arc(p.x * w, p.y * h, p.s, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(212, 175, 55, ${0.12 + p.s * 0.06})`
-        ctx.fill()
-      })
-
-      // Ocean disc
-      const disc = ctx.createRadialGradient(g.cx - g.r * 0.3, g.cy - g.r * 0.3, g.r * 0.1, g.cx, g.cy, g.r)
-      disc.addColorStop(0, 'rgba(24, 47, 72, 0.95)')
-      disc.addColorStop(1, 'rgba(9, 20, 32, 0.98)')
-      ctx.beginPath()
-      ctx.arc(g.cx, g.cy, g.r, 0, Math.PI * 2)
-      ctx.fillStyle = disc
-      ctx.fill()
-      ctx.strokeStyle = 'rgba(212, 175, 55, 0.3)'
-      ctx.lineWidth = 1
-      ctx.stroke()
-
-      // Faint equator + a couple of meridians for globe structure
-      ctx.strokeStyle = 'rgba(91, 113, 133, 0.12)'
-      ctx.lineWidth = 0.6
-      for (const lon0 of [0, 60, 120]) {
-        ctx.beginPath()
-        let drawing = false
-        for (let lat = -90; lat <= 90; lat += 4) {
-          const p = project(lon0 * D2R, lat * D2R, rot, g)
-          if (p.front) {
-            if (drawing) ctx.lineTo(p.x, p.y)
-            else { ctx.moveTo(p.x, p.y); drawing = true }
-          } else drawing = false
-        }
-        ctx.stroke()
-      }
-
-      // Land dots (the world map)
-      const dot = 1.5
-      for (const [lon, lat] of landPoints) {
-        const p = project(lon, lat, rot, g)
-        if (!p.front) continue
-        ctx.fillStyle = `rgba(150, 180, 205, ${0.12 + p.depth * 0.55})`
-        ctx.fillRect(p.x - dot / 2, p.y - dot / 2, dot, dot)
-      }
-
-      // Hub points
-      const pts = hubs.map((hh) => project(hh.lon, hh.lat, rot, g))
-      pts.forEach((p) => {
-        if (!p.front) return
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, 2.4, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(224, 192, 116, ${0.5 + p.depth * 0.5})`
-        ctx.fill()
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, 6, 0, Math.PI * 2)
-        ctx.strokeStyle = `rgba(212, 175, 55, ${0.15 + p.depth * 0.25})`
-        ctx.lineWidth = 1
-        ctx.stroke()
-      })
-
-      // Arcs between front-facing hubs
-      for (let i = 0; i < pts.length; i++) {
-        const a = pts[i]
-        const b = pts[(i + 2) % pts.length]
-        if (!a.front || !b.front) continue
-        const mx = (a.x + b.x) / 2
-        const my = (a.y + b.y) / 2 - Math.hypot(a.x - b.x, a.y - b.y) * 0.28
-        ctx.beginPath()
-        ctx.moveTo(a.x, a.y)
-        ctx.quadraticCurveTo(mx, my, b.x, b.y)
-        const grad = ctx.createLinearGradient(a.x, a.y, b.x, b.y)
-        grad.addColorStop(0, 'rgba(212, 175, 55, 0)')
-        grad.addColorStop(0.5, 'rgba(224, 192, 116, 0.55)')
-        grad.addColorStop(1, 'rgba(212, 175, 55, 0)')
-        ctx.strokeStyle = grad
-        ctx.lineWidth = 1.2
-        ctx.stroke()
-      }
-    }
-
-    if (animate) {
-      const loop = (t: number) => {
-        drawFrame(t)
-        raf = requestAnimationFrame(loop)
-      }
+      renderer.render(scene, camera)
       raf = requestAnimationFrame(loop)
-    } else {
-      drawFrame(0)
     }
+    arcs.forEach((arc) => arc.curve.getPointAt(0.5, arc.pulse.position))
+    raf = requestAnimationFrame(loop)
 
     return () => {
       cancelAnimationFrame(raf)
-      window.removeEventListener('resize', resize)
+      window.removeEventListener('resize', layout)
+      renderer.dispose()
+      scene.traverse((o) => {
+        const m = o as THREE.Mesh
+        if (m.geometry) m.geometry.dispose()
+        const mat = m.material
+        if (Array.isArray(mat)) mat.forEach((x) => x.dispose())
+        else if (mat) (mat as THREE.Material).dispose()
+      })
+      ;[dayMap, nightMap, specMap, cloudMap, dotTex].forEach((t) => t.dispose())
     }
   }, [animate])
 

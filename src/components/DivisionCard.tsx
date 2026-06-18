@@ -7,7 +7,7 @@ export default function DivisionCard({ division }: { division: Division }) {
   return (
     <Link
       to={`/divisions/${division.slug}`}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/8 bg-[#13283f] p-7 transition-all duration-300 hover:-translate-y-1 hover:border-[#d4af37]/40 hover:shadow-gold"
+      className="lg-card lg-card-hover group relative flex flex-col p-7"
     >
       <div className="absolute right-0 top-0 h-24 w-24 translate-x-8 -translate-y-8 rounded-full bg-[#d4af37]/10 blur-2xl transition-opacity duration-300 group-hover:opacity-100 opacity-0" />
       <div className="mb-5 grid h-12 w-12 place-items-center rounded-xl border border-[#d4af37]/30 bg-[#0a1622] text-[#d4af37]">

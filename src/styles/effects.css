@@ -53,3 +53,112 @@
     animation: none;
   }
 }
+
+/* ============================================================
+   Liquid-glass finish — cards & buttons
+   ============================================================ */
+
+/* Liquid-glass card surface. Apply `.lg-card` to card containers. */
+.lg-card {
+  position: relative;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.02) 55%),
+    rgba(19, 40, 63, 0.45);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1rem;
+  box-shadow:
+    0 18px 40px -20px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.4s ease,
+    box-shadow 0.4s ease;
+}
+/* Glossy sheen across the top edge. */
+.lg-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 42%);
+  pointer-events: none;
+}
+.lg-card:hover {
+  border-color: rgba(212, 175, 55, 0.4);
+  box-shadow:
+    0 26px 60px -22px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 10px 36px -16px rgba(212, 175, 55, 0.32);
+}
+/* Hover-lift variant for clickable cards. */
+.lg-card-hover:hover {
+  transform: translateY(-4px);
+}
+
+/* Enhance the shared glass panel (header dropdown / mobile menu / panels). */
+.glass {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)) ,
+    rgba(11, 31, 58, 0.6) !important;
+  backdrop-filter: blur(18px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(150%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Liquid-glass buttons (override index.css). */
+.btn-gold {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #e8c766 0%, #d4af37 55%, #c79a22 100%) !important;
+  color: #0a1622 !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -2px 6px rgba(120, 90, 10, 0.35),
+    0 10px 28px -10px rgba(212, 175, 55, 0.55) !important;
+}
+.btn-gold::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 48%);
+  pointer-events: none;
+}
+.btn-gold:hover {
+  filter: brightness(1.05);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 14px 36px -10px rgba(212, 175, 55, 0.7) !important;
+}
+
+.btn-ghost {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+}
+.btn-ghost::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0) 50%);
+  pointer-events: none;
+}
+.btn-ghost:hover {
+  border-color: rgba(212, 175, 55, 0.5) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-card,
+  .lg-card-hover {
+    transition: none;
+  }
+}

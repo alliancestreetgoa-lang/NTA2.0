@@ -63,7 +63,19 @@ export const about = {
   paragraphs: [raw.about.body],
 }
 
-export const whyChoose = raw.capabilities
+const U = 'https://images.unsplash.com/photo-'
+const img = (id: string) => `${U}${id}?auto=format&fit=crop&w=800&q=70`
+
+// Topic images for the "Why NTA" capability cards (matched by order).
+const whyImages = [
+  img('1451187580459-43490279c0fa'), // global network — earth from space
+  img('1611974789855-9c2a0a7236a3'), // market expertise — trading screens
+  img('1578575437130-527eed3abbec'), // reliable supply chains — cargo containers
+  img('1450101499163-c8848c66ca85'), // professional compliance — documents
+  img('1521791136064-7986c2920216'), // strategic partnerships — handshake
+]
+
+export const whyChoose = raw.capabilities.map((c, i) => ({ ...c, image: whyImages[i % whyImages.length] }))
 
 export const stats = raw.stats
 
@@ -84,7 +96,15 @@ export const sustainability = {
   heading: 'Trading responsibly across the global supply chain.',
   intro:
     'We pursue commercial excellence without compromising on compliance, transparency, or the long-term health of the markets and communities we serve.',
-  pillars: raw.sustainability,
+  pillars: raw.sustainability.map((p, i) => ({
+    ...p,
+    image: [
+      img('1574323347407-f5e1ad6d020b'), // responsible trading — wheat / agri
+      img('1450101499163-c8848c66ca85'), // compliance first — documents
+      img('1601584115197-04ecc0da31d7'), // efficient logistics — warehouse/logistics
+      img('1497435334941-8c899ee9e8e9'), // long-term partnerships — green field
+    ][i % 4],
+  })),
 }
 
 export const industries = [

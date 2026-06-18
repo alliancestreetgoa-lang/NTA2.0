@@ -40,7 +40,7 @@ export default function ContactForm() {
 
   if (sent) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-2xl border border-[#d4af37]/30 bg-[#13283f] px-8 py-14 text-center">
+      <div className="lg-card flex flex-col items-center justify-center px-8 py-14 text-center">
         <div className="grid h-14 w-14 place-items-center rounded-full bg-[#d4af37] text-[#0a1622]">
           <Check className="h-7 w-7" />
         </div>
@@ -56,7 +56,7 @@ export default function ContactForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="rounded-2xl border border-white/8 bg-[#13283f] p-6 sm:p-8">
+    <form onSubmit={onSubmit} noValidate className="lg-card p-6 sm:p-8">
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Full name" error={errors.name}>
           <input name="name" type="text" className={inputClass} placeholder="Jane Trader" aria-invalid={!!errors.name} />

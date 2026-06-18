@@ -3,12 +3,12 @@ import Reveal from './Reveal'
 
 export default function StatStrip() {
   return (
-    <div className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-white/8 bg-white/8 lg:grid-cols-4">
+    <div className="lg-card grid grid-cols-2 lg:grid-cols-4">
       {stats.map((s, i) => (
         <Reveal
           key={s.label}
           delay={i * 0.09}
-          className="bg-[#0b1f3a] px-6 py-8 text-center"
+          className="px-6 py-8 text-center"
         >
           <div className="font-display text-3xl font-bold tabular-nums text-[#d4af37] sm:text-4xl">
             {s.value}
