@@ -109,26 +109,20 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
         varying vec3 vWorldPos;
         void main() {
           vec3 N = normalize(vNormalW);
-          vec3 L = normalize(uSun);
-          float cosA = dot(N, L);
-          float dayAmt = smoothstep(-0.25, 0.32, cosA);
-          vec3 day = texture2D(dayMap, vUv).rgb;
-          vec3 night = texture2D(nightMap, vUv).rgb;
-          float diff = clamp(cosA, 0.0, 1.0);
-          float water = texture2D(specMap, vUv).r;
-          vec3 dayLit = day * (0.85 + 0.55 * diff);
-          // lift oceans to a vivid blue marble (water mask = specular map)
-          vec3 ocean = vec3(0.09, 0.26, 0.5) * (0.55 + 0.6 * diff);
-          dayLit = mix(dayLit, ocean, water * 0.6);
           vec3 V = normalize(uCamera - vWorldPos);
-          vec3 H = normalize(L + V);
-          float spec = pow(max(dot(N, H), 0.0), 80.0) * water * dayAmt;
-          vec3 col = mix(night * 1.4, dayLit, dayAmt) + vec3(1.0, 0.92, 0.7) * spec * 0.4;
-          // gentle limb darkening — keeps the sphere round without going dark
+          vec3 night = texture2D(nightMap, vUv).rgb;
+          float water = texture2D(specMap, vUv).r;
+          // "Black marble": dark night earth everywhere — oceans deep navy,
+          // land a touch lighter charcoal so continents are still readable.
+          vec3 oceanBase = vec3(0.012, 0.035, 0.095);
+          vec3 landBase = vec3(0.05, 0.055, 0.06);
+          vec3 base = mix(landBase, oceanBase, water);
+          // warm city lights glowing across the whole globe
+          vec3 lights = night * vec3(1.35, 1.1, 0.72) * 2.4;
+          vec3 col = base + lights;
+          // limb darkening for a round 3D sphere
           float ndv = clamp(dot(N, V), 0.0, 1.0);
-          col *= 0.72 + 0.28 * smoothstep(0.0, 0.85, ndv);
-          float lum = dot(col, vec3(0.299, 0.587, 0.114));
-          col = mix(vec3(lum), col, 1.3); // saturation boost
+          col *= 0.5 + 0.5 * smoothstep(0.0, 0.85, ndv);
           gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
         }
       `,
