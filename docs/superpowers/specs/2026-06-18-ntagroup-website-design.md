@@ -1,150 +1,171 @@
-# NTA Group Website — Design Spec
+# NTA Group Website — Design Spec (v2, approved)
 
 **Date:** 2026-06-18
-**Domain:** ntagroup.ae (registered, currently no live site — Apache 404)
-**Type:** Multi-page corporate marketing website
+**Domain:** ntagroup.ae (registered, no live site yet)
+**Type:** Hybrid — cinematic single landing page + routed division detail pages
+
+> Supersedes the earlier conservative v1 spec. Changes: gold accent (not copper),
+> full-screen video hero with animated-canvas fallback, Framer Motion, added Global
+> Markets (interactive map) and Sustainability sections, hybrid routing.
 
 ## 1. Overview
 
-A multi-page corporate website for **NTA Group**, a UAE-headquartered multi-commodity
-trading house operating across energy and agri-commodities. The site presents the company
-and its four trading divisions to international partners, suppliers, and buyers.
+A premium corporate marketing site for **NTA Group**, a UAE-headquartered multi-commodity
+trading house spanning energy and agri-commodities. It presents the company and its four
+trading divisions to international partners, suppliers, and buyers, with a Bloomberg-adjacent,
+institutional, "large global trading house" feel.
 
-All company copy and contact details are **crafted placeholders** (the live domain has no
-content to source from) and are written to be realistic and easily swapped. Every placeholder
-is collected in a single config module so real details can be dropped in one place.
+All company copy and contact details are **crafted placeholders** collected in a single config
+module (`src/config/company.ts`) so real details swap in one place.
 
 ## 2. Brand & Visual Direction
 
-**Direction:** Corporate energy/commodity — institutional, trustworthy, global.
+**Direction:** Premium corporate energy/commodity — institutional, trustworthy, global, cinematic.
 
-**Palette:**
-- `--navy-900` `#0A1622` (primary background / dark sections)
-- `--navy-800` `#0F1F30`
-- `--navy-700` `#16293D` (cards on dark)
-- `--steel-400` `#5B7185` (muted text on dark)
-- `--accent` `#C8852F` (amber/copper — oil & grain warmth; CTAs, rules, highlights)
-- `--accent-soft` `#E0A85A`
-- `--paper` `#F6F4EF` (light section background — warm off-white)
+**Palette (CSS tokens):**
+- `--navy-900` `#0A1622` (deepest sections)
+- `--navy-800` `#0B1F3A` (primary brand navy)
+- `--navy-700` `#13283F` (cards on dark)
+- `--steel` `#6B7280` (muted text)
+- `--gold` `#D4AF37` (CTAs, rules, highlights, map nodes)
+- `--gold-soft` `#E0C074`
+- `--paper` `#F6F4EF` (light band background)
 - `--ink-900` `#101820` (text on light)
-- `--ink-500` `#56616B` (muted text on light)
+- `--ink-500` `#56616B` (muted on light)
 - White `#FFFFFF`
 
-**Typography (system / Google Fonts):**
-- Headings: a strong grotesque/serif-adjacent sans — **"Fraunces"** (display serif) for big hero/section titles to read institutional, OR **"Sora"** for a cleaner corporate feel. Decision: **Sora** for headings (corporate, modern), **Inter** for body.
-- Display sizes use `clamp()` for fluid scaling.
+**Typography:** **Sora** (display/headings) + **Inter** (body), Google Fonts, fluid `clamp()`.
+Stats use Inter tabular numerals.
 
-**Motion:** Subtle. Scroll-reveal fade/translate on section entry (IntersectionObserver-based,
-no heavy library), accent underline + arrow micro-interactions on links/CTAs, smooth color
-transitions. No parallax-heavy or distracting effects.
+**Effects:** Glassmorphism on header, cards, stat tiles (backdrop blur + translucent navy).
+Gold hairline rules, arrow micro-interactions, gradient/duotone image overlays.
 
-**Imagery:** Themed via gradient/duotone placeholder blocks + descriptive alt text, with clearly
-marked slots for real photography (ports, tankers, LNG terminals, grain silos, refineries).
-Use Unsplash source URLs as stand-in imagery where a photo is needed.
+**Motion (Framer Motion):** scroll-reveal (`whileInView`, once), staggered card entries, hero
+text rise, hover lift on cards, scroll-aware header. **All motion gated by
+`prefers-reduced-motion`** (custom `useReducedMotion` + reduced variants).
+
+**Imagery:** Free stock industrial footage/photos (Coverr/Pexels/Unsplash CDN) as stand-ins
+with descriptive alt text and clearly swappable URLs in config.
 
 ## 3. Tech Stack
 
 - **React 18 + TypeScript + Vite**
-- **Tailwind CSS 3.4** (custom theme tokens for the palette above)
-- **react-router-dom v6** for multi-page routing (BrowserRouter)
+- **Tailwind CSS 3.4** with custom theme tokens for the palette
+- **react-router-dom v6** (BrowserRouter)
+- **framer-motion** for animation
 - **lucide-react** for icons
 - No backend. Contact form is UI-only.
-- New project at `~/ntagroup`, its own git repo.
+- Project at `~/ntagroup`, its own git repo.
 
 ## 4. Site Map & Routing
 
 | Path | Page | Purpose |
 |------|------|---------|
-| `/` | Home | Hero, intro, 4 division cards, global-reach stats, CTA |
-| `/about` | About | Who we are, mission, vision, values, why UAE |
-| `/divisions/grains` | Grains, Cereals & Legumes Trading | Division detail |
-| `/divisions/lng` | Industrial & Liquefied Natural Gas Trading | Division detail |
-| `/divisions/refined-oil` | Refined Oil Products Trading | Division detail |
-| `/divisions/crude-oil` | Crude Oil Trading | Division detail |
-| `/contact` | Contact | Form (UI only) + details + map placeholder |
+| `/` | Landing | Hero, About, Divisions, Why NTA, Global Markets, Sustainability, Contact (anchor sections) |
+| `/divisions/grains` | Grains, Cereals & Legumes | Division detail |
+| `/divisions/lng` | Industrial & LNG | Division detail |
+| `/divisions/refined-oil` | Refined Oil Products | Division detail |
+| `/divisions/crude-oil` | Crude Oil | Division detail |
+| `*` | NotFound | 404 |
 
-Shared **Header** (logo, nav, Divisions dropdown, "Get in touch" CTA, mobile menu) and
-**Footer** (company blurb, division links, contact, copyright) on every page. Scroll-to-top
-on route change.
+Shared glassmorphic **Header** (logo, anchor nav for the landing page + Divisions dropdown,
+"Get in touch" CTA, mobile hamburger, transparent→solid on scroll) and **Footer**. Home nav
+uses smooth-scroll to in-page anchors; division links are real routes. Scroll-to-top on route
+change; deep-link to an anchor scrolls after route load.
 
 ## 5. Page Content
 
-### Home
-1. **Hero** — dark navy, headline *"Connecting global markets in energy and agri-commodities."*
-   subcopy, two CTAs (Explore divisions / Contact us), accent detailing. Background duotone image.
-2. **Intro / positioning** — short paragraph on NTA Group as a UAE-based trading house bridging
-   producers and markets across continents.
-3. **Divisions grid** — 4 cards (Grains/Cereals/Legumes, LNG, Refined Oil, Crude Oil), each with
-   icon, one-line description, link to its page.
-4. **Global reach / stats strip** — placeholder stats (e.g. "30+ countries", "4 commodity verticals",
-   "1M+ MT traded annually", "10+ years"), on accent/dark band.
-5. **Why NTA / capabilities** — 3–4 points: logistics, compliance, market access, reliability.
-6. **CTA band** — "Let's trade." → Contact.
+### Landing (`/`)
+1. **Hero** — full-screen, navy. Primary: muted/looped free stock industrial clip + navy
+   gradient overlay + poster image. Fallback layer: animated `<canvas>` (dark globe + glowing
+   gold great-circle trade-route arcs + drifting particles) rendered when video errors, on
+   mobile, or under `prefers-reduced-motion`. Gold headline *"Powering Global Trade Through
+   Energy & Agricultural Commodities."*, subcopy, two CTAs (Explore Our Divisions /
+   Contact Our Trading Team), scroll cue.
+2. **About** — positioning paragraphs on NTA Group as a UAE trading house bridging producers
+   and global markets.
+3. **Divisions grid** — 4 glass cards (Grains/Cereals/Legumes, Industrial & LNG, Refined Oil,
+   Crude Oil): icon, one-line description, "Explore" link to detail page.
+4. **Why NTA** — capability points: global network, market expertise, reliable supply chains,
+   professional compliance, strategic partnerships.
+5. **Global Markets** — interactive inline-SVG world map with pulsing gold nodes on the 10 listed
+   markets + animated arcs between hubs; Bloomberg-style stat strip (placeholder figures).
+6. **Sustainability** — responsible trading / compliance / efficient logistics / long-term
+   partnerships; 3–4 glass cards on a navy band.
+7. **Contact** — heading + intro, **UI-only form** (name, company, email, division select,
+   message) with client-side validation + success state (no network), contact details block.
 
-### About
-- Company story (placeholder), mission, vision, 4 core values (Integrity, Reliability, Global
-  reach, Compliance), "Why the UAE" positioning, leadership placeholder note.
-
-### Division pages (shared layout, distinct content)
-Each page: hero with division name + tagline, overview paragraph, "What we trade" list (commodity
-types), "How we operate" points (sourcing, logistics, quality, settlement), CTA to contact.
-- **Grains, Cereals & Legumes:** wheat, corn/maize, barley, rice, soybeans, pulses (lentils,
-  chickpeas, beans), oilseeds.
-- **Industrial & LNG:** LNG, LPG, industrial gases; supply contracts, shipping, terminal logistics.
-- **Refined Oil Products (abroad):** gasoil/diesel, jet fuel, gasoline, fuel oil, naphtha, bitumen.
-- **Crude Oil (abroad):** crude grades, cargo trading, chartering, international delivery terms (CIF/FOB).
-
-### Contact
-- Heading + intro, **contact form (UI only)**: name, company, email, division (select), message,
-  submit. On submit: client-side validation + a success state ("Thanks — we'll be in touch"),
-  no network request. Contact details block (address, phone, email, hours), map placeholder block.
+### Division pages (shared, data-driven)
+Each: hero (division name + tagline), overview, "What we trade" list, "How we operate" points,
+CTA to contact. Records:
+- **Grains, Cereals & Legumes:** wheat, corn/maize, barley, rice, soybeans, lentils, chickpeas,
+  beans, peas, other agri-commodities. Services: global sourcing, bulk procurement, export/import
+  facilitation, supply-chain management, commodity risk management.
+- **Industrial & LNG:** LNG, natural gas, industrial gas solutions. Capabilities: international
+  LNG supply, long-term agreements, industrial gas procurement, cross-border solutions.
+- **Refined Oil Products:** diesel, gasoline, jet fuel, fuel oil, naphtha, base oils, marine
+  fuels. Services: international trading, bulk supply contracts, logistics coordination,
+  strategic procurement.
+- **Crude Oil:** spot transactions, long-term supply agreements, global market access, contract
+  structuring, trading support.
 
 ## 6. Component Architecture
 
 ```
 src/
-  main.tsx                # Router setup
+  main.tsx                # BrowserRouter
   App.tsx                 # Routes + Layout
-  config/company.ts       # ALL placeholder copy/contact/divisions data (single source of truth)
+  config/company.ts       # ALL copy/contact/divisions/markets/stats (single source of truth)
+  hooks/
+    useReducedMotion.ts
+    useScrolled.ts
+  lib/
+    motion.ts             # shared Framer Motion variants (reveal, stagger)
   components/
-    Layout.tsx            # Header + <Outlet/> + Footer + ScrollToTop
-    Header.tsx
+    Layout.tsx            # Header + <Outlet/> + Footer + ScrollManager
+    Header.tsx            # glass, scroll-aware, divisions dropdown, mobile menu
     Footer.tsx
-    Reveal.tsx            # IntersectionObserver scroll-reveal wrapper
+    ScrollManager.tsx     # scroll-to-top on route change + anchor deep-link
+    Reveal.tsx            # Framer Motion whileInView wrapper (reduced-motion aware)
+    HeroCanvas.tsx        # animated globe + trade-route arcs fallback
+    Hero.tsx
     DivisionCard.tsx
+    WorldMap.tsx          # inline SVG world + gold nodes + arcs
     StatStrip.tsx
+    SustainabilityCards.tsx
     CTABand.tsx
-    ContactForm.tsx       # UI-only form with validation + success state
+    ContactForm.tsx       # UI-only validation + success
+  sections/               # landing-page sections composing the above
+    About.tsx Divisions.tsx WhyNTA.tsx GlobalMarkets.tsx Sustainability.tsx ContactSection.tsx
   pages/
-    Home.tsx
-    About.tsx
-    DivisionPage.tsx      # data-driven; renders from config by slug
-    Contact.tsx
+    Landing.tsx
+    DivisionPage.tsx      # data-driven by slug
     NotFound.tsx
-  index.css               # Tailwind + tokens + base
+  index.css               # Tailwind + tokens + base + fonts
 ```
-
-Division pages are **data-driven**: one `DivisionPage` component reads the division record
-(by route slug) from `config/company.ts`, so all four pages share layout and differ only by data.
 
 ## 7. Responsive & Accessibility
 
-- Mobile-first; breakpoints sm/md/lg. Mobile hamburger menu for nav.
-- Semantic landmarks (`header`/`nav`/`main`/`footer`), alt text, labelled form fields, visible
-  focus states, sufficient contrast (accent on navy and ink on paper both pass AA for text sizes used).
+- Mobile-first; sm/md/lg breakpoints; hamburger nav on mobile.
+- Semantic landmarks, alt text, labelled fields, visible focus rings, AA contrast (gold-on-navy
+  and ink-on-paper verified for sizes used; gold used for large text / non-text accents).
+- Hero canvas/video respect `prefers-reduced-motion`; video is `muted`/`playsinline`.
 
 ## 8. Success Criteria
 
-- `npm run build` passes (tsc + vite), no type errors.
-- All 7 routes render and navigate; header/footer present everywhere; 404 route works.
+- `npm run build` passes (tsc + vite), zero type errors.
+- All routes render and navigate; header/footer everywhere; 404 works.
 - 4 division pages render distinct content from config.
-- Contact form validates and shows success state with no console errors / no network call.
-- Responsive from 360px to 1440px; nav collapses on mobile.
-- All placeholder company details live in `config/company.ts` for one-place swapping.
+- Landing anchors smooth-scroll; deep-links work.
+- Hero shows video, falls back to animated canvas on error/mobile/reduced-motion.
+- Global Markets map renders nodes + arcs; stat strip shows figures.
+- Contact form validates and shows success with no console errors / no network call.
+- Responsive 360px–1440px.
+- All placeholder details live in `config/company.ts`.
 
 ## 9. Out of Scope (YAGNI)
 
 - Backend / real form submission / email.
-- CMS, i18n, blog/news, careers, real authentication.
-- Real photography and final legal copy (placeholders only).
+- CMS, i18n, blog/news, careers, real auth.
+- Final legal copy and real photography (placeholders only).
 - Deployment (separate step if requested).
