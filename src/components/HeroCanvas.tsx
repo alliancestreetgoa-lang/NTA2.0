@@ -63,19 +63,17 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
     scene.add(world)
 
     const globeSpin = new THREE.Group()
-    const cloudSpin = new THREE.Group()
-    world.add(globeSpin, cloudSpin)
+    world.add(globeSpin)
 
     const loader = new THREE.TextureLoader()
     loader.setCrossOrigin('anonymous')
     const dayMap = loader.load(`${TEX}/earth_atmos_2048.jpg`)
     const nightMap = loader.load(`${TEX}/earth_lights_2048.png`)
     const specMap = loader.load(`${TEX}/earth_specular_2048.jpg`)
-    const cloudMap = loader.load(`${TEX}/earth_clouds_1024.png`)
     dayMap.colorSpace = THREE.SRGBColorSpace
     nightMap.colorSpace = THREE.SRGBColorSpace
     const maxAniso = renderer.capabilities.getMaxAnisotropy()
-    ;[dayMap, nightMap, specMap, cloudMap].forEach((t) => (t.anisotropy = maxAniso))
+    ;[dayMap, nightMap, specMap].forEach((t) => (t.anisotropy = maxAniso))
 
     const SUN = new THREE.Vector3(0.55, 0.2, 0.92).normalize()
 
@@ -131,35 +129,6 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
     })
     const earth = new THREE.Mesh(new THREE.SphereGeometry(1, 96, 96), earthMat)
     globeSpin.add(earth)
-
-    // Clouds — fade out on the night side.
-    const cloudMat = new THREE.ShaderMaterial({
-      transparent: true,
-      depthWrite: false,
-      uniforms: { map: { value: cloudMap }, uSun: { value: SUN } },
-      vertexShader: `
-        varying vec2 vUv;
-        varying vec3 vNormalW;
-        void main() {
-          vUv = uv;
-          vNormalW = normalize(mat3(modelMatrix) * normal);
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        uniform sampler2D map;
-        uniform vec3 uSun;
-        varying vec2 vUv;
-        varying vec3 vNormalW;
-        void main() {
-          float c = texture2D(map, vUv).r;
-          float lit = smoothstep(-0.2, 0.3, dot(normalize(vNormalW), normalize(uSun)));
-          gl_FragColor = vec4(vec3(1.0), c * (0.12 + 0.88 * lit) * 0.42);
-        }
-      `,
-    })
-    const clouds = new THREE.Mesh(new THREE.SphereGeometry(1.012, 64, 64), cloudMat)
-    cloudSpin.add(clouds)
 
     // Atmosphere rim glow
     const atmosphere = new THREE.Mesh(
@@ -254,7 +223,6 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
       const dt = clock.getDelta()
       if (animate) {
         globeSpin.rotation.y += dt * 0.05
-        cloudSpin.rotation.y += dt * 0.072
         arcs.forEach((arc) => {
           arc.offset = (arc.offset + dt * arc.speed) % 1
           arc.curve.getPointAt(arc.offset, arc.pulse.position)
@@ -277,7 +245,7 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
         if (Array.isArray(mat)) mat.forEach((x) => x.dispose())
         else if (mat) (mat as THREE.Material).dispose()
       })
-      ;[dayMap, nightMap, specMap, cloudMap, dotTex].forEach((t) => t.dispose())
+      ;[dayMap, nightMap, specMap, dotTex].forEach((t) => t.dispose())
     }
   }, [animate])
 
