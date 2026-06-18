@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { ArrowRight, ChevronDown } from 'lucide-react'
 import { hero } from '../config/site'
 import { useReducedMotion } from '../hooks/useReducedMotion'
@@ -73,10 +74,10 @@ export default function Hero() {
             {hero.subhead}
           </p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <a href={hero.primaryCta.href} className="btn-gold group">
+            <Link to={hero.primaryCta.href} className="btn-gold group">
               {hero.primaryCta.label}
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </a>
+            </Link>
             <a href={hero.secondaryCta.href} className="btn-ghost">
               {hero.secondaryCta.label}
             </a>

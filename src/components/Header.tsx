@@ -80,6 +80,14 @@ export default function Header() {
                   </div>
                 )}
               </div>
+            ) : item.href.startsWith('/') ? (
+              <Link
+                key={item.label}
+                to={item.href}
+                className="text-sm font-medium text-white/85 transition-colors hover:text-[#d4af37]"
+              >
+                {item.label}
+              </Link>
             ) : (
               <button
                 key={item.label}
@@ -111,15 +119,26 @@ export default function Header() {
       {open && (
         <div className="glass mt-3 lg:hidden">
           <nav className="container-x flex flex-col gap-1 py-4">
-            {nav.map((item) => (
-              <button
-                key={item.label}
-                onClick={() => goToAnchor(item.href)}
-                className="py-2.5 text-left text-base font-medium text-white/90"
-              >
-                {item.label}
-              </button>
-            ))}
+            {nav.map((item) =>
+              item.href.startsWith('/') ? (
+                <Link
+                  key={item.label}
+                  to={item.href}
+                  onClick={() => setOpen(false)}
+                  className="py-2.5 text-left text-base font-medium text-white/90"
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <button
+                  key={item.label}
+                  onClick={() => goToAnchor(item.href)}
+                  className="py-2.5 text-left text-base font-medium text-white/90"
+                >
+                  {item.label}
+                </button>
+              ),
+            )}
             <div className="my-2 hairline" />
             {divisions.map((d) => (
               <Link

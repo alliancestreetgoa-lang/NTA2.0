@@ -131,7 +131,7 @@ export const hero = {
     'A global trading house with a core focus on chemical fertilizers — alongside grains and cereals, petrochemicals, crude oil, refined products and LNG — connecting producers and markets across the world, reliably and at scale.',
   videoSrc: raw.heroVideo,
   poster: raw.heroPoster,
-  primaryCta: { label: 'Explore Our Divisions', href: '#divisions' },
+  primaryCta: { label: 'Explore Our Commodities', href: '/commodities' },
   secondaryCta: { label: 'Contact Our Trading Team', href: '#contact' },
 }
 
@@ -198,6 +198,7 @@ export const nav = [
   { label: 'Home', href: '#top' },
   { label: 'About', href: '#about' },
   { label: 'Divisions', href: '#divisions' },
+  { label: 'Commodities', href: '/commodities' },
   { label: 'Global Markets', href: '#markets' },
   { label: 'Sustainability', href: '#sustainability' },
   { label: 'Contact', href: '#contact' },
