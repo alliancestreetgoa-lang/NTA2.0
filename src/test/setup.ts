@@ -12,6 +12,12 @@ class IntersectionObserverStub {
 }
 vi.stubGlobal('IntersectionObserver', IntersectionObserverStub)
 
+// jsdom does not implement window.scrollTo (used by ScrollManager on route change).
+vi.stubGlobal('scrollTo', vi.fn())
+
+// jsdom does not implement canvas 2D (used by HeroCanvas).
+HTMLCanvasElement.prototype.getContext = vi.fn() as unknown as typeof HTMLCanvasElement.prototype.getContext
+
 // matchMedia is also absent in jsdom (used by useReducedMotion / Hero).
 if (!window.matchMedia) {
   vi.stubGlobal(
