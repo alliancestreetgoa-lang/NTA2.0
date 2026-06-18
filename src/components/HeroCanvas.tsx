@@ -75,7 +75,7 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
     const maxAniso = renderer.capabilities.getMaxAnisotropy()
     ;[dayMap, nightMap, specMap].forEach((t) => (t.anisotropy = maxAniso))
 
-    const SUN = new THREE.Vector3(0.55, 0.2, 0.92).normalize()
+    const SUN = new THREE.Vector3(0.92, 0.28, 0.4).normalize()
 
     // Earth — custom shader blending day/night by sun direction, with ocean specular.
     const earthMat = new THREE.ShaderMaterial({
@@ -115,12 +115,15 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
           vec3 day = texture2D(dayMap, vUv).rgb;
           vec3 night = texture2D(nightMap, vUv).rgb;
           float diff = clamp(cosA, 0.0, 1.0);
-          vec3 dayLit = day * (0.55 + 0.75 * diff);
+          vec3 dayLit = day * (0.45 + 0.95 * diff);
           float water = texture2D(specMap, vUv).r;
           vec3 V = normalize(uCamera - vWorldPos);
           vec3 H = normalize(L + V);
-          float spec = pow(max(dot(N, H), 0.0), 26.0) * water * dayAmt;
-          vec3 col = mix(night * 1.5, dayLit, dayAmt) + vec3(1.0, 0.94, 0.78) * spec * 0.9;
+          float spec = pow(max(dot(N, H), 0.0), 80.0) * water * dayAmt;
+          vec3 col = mix(night * 1.5, dayLit, dayAmt) + vec3(1.0, 0.92, 0.7) * spec * 0.5;
+          // limb darkening — fall off toward the silhouette so the sphere reads as 3D
+          float ndv = clamp(dot(N, V), 0.0, 1.0);
+          col *= 0.4 + 0.6 * smoothstep(0.0, 0.8, ndv);
           float lum = dot(col, vec3(0.299, 0.587, 0.114));
           col = mix(vec3(lum), col, 1.3); // saturation boost
           gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
