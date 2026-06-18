@@ -1,54 +1,58 @@
-# NTA Group Website Implementation Plan
+# NTA Group Website Implementation Plan (v2)
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build a multi-page corporate marketing website for NTA Group (UAE multi-commodity trading house) with Home, About, four division detail pages, and a UI-only Contact form.
+**Goal:** Build a premium corporate site for NTA Group (UAE multi-commodity trading house): one cinematic landing page with anchor sections (Hero, About, Divisions, Why NTA, Global Markets, Sustainability, Contact) plus four routed division detail pages and a 404.
 
-**Architecture:** React 18 + TypeScript + Vite SPA with `react-router-dom` v6. A single `config/company.ts` module is the source of truth for all placeholder copy, contact details, and the four divisions; division pages are data-driven (one component renders any division by route slug). Shared `Layout` (Header + Footer + scroll-to-top) wraps all routes. Subtle scroll-reveal motion via a small IntersectionObserver wrapper — no heavy animation library.
+**Architecture:** React 18 + TS + Vite SPA with `react-router-dom` v6. Landing page composes section components; division pages are data-driven from `config/company.ts` (single source of truth). Framer Motion drives scroll-reveal/stagger/hover, all gated by `prefers-reduced-motion`. The hero plays a muted looped stock clip with an animated `<canvas>` globe + gold trade-route arc fallback (used on error/mobile/reduced-motion). Global Markets uses an inline-SVG stylized world (graticule + pulsing gold nodes + animated arcs).
 
-**Tech Stack:** Vite, React 18, TypeScript, Tailwind CSS 3.4, react-router-dom v6, lucide-react, Vitest + @testing-library/react (logic + light render tests).
+**Tech Stack:** Vite, React 18, TypeScript, Tailwind 3.4, react-router-dom v6, framer-motion, lucide-react, Vitest + @testing-library/react.
+
+**Status:** Task 1 (scaffold) already complete (commit b802a2c). Task 2 below upgrades that scaffold to the v2 palette + framer-motion.
 
 ## Global Constraints
 
-- Project root: `~/ntagroup` (already a git repo with the spec committed).
-- Node package manager: `npm`.
-- Tailwind 3.4, default breakpoints (sm 640 / md 768 / lg 1024 / xl 1280).
-- All company copy, contact details, stats, and division data MUST live in `src/config/company.ts` — no hardcoded company strings in components (icons/labels for nav structure excepted).
-- Palette tokens (exact): navy-900 `#0A1622`, navy-800 `#0F1F30`, navy-700 `#16293D`, steel-400 `#5B7185`, accent `#C8852F`, accent-soft `#E0A85A`, paper `#F6F4EF`, ink-900 `#101820`, ink-500 `#56616B`.
-- Fonts: headings **Sora**, body **Inter** (Google Fonts via index.html `<link>`).
-- Routes (exact paths): `/`, `/about`, `/divisions/grains`, `/divisions/lng`, `/divisions/refined-oil`, `/divisions/crude-oil`, `/contact`, and a catch-all `*` → NotFound.
-- Division slugs (exact): `grains`, `lng`, `refined-oil`, `crude-oil`.
+- Project root: `~/ntagroup` (git repo; scaffold + docs already committed). Build on `main`.
+- Package manager: `npm`. Tailwind 3.4, default breakpoints.
+- ALL company copy, contact details, divisions, markets, stats, and image URLs live in `src/config/company.ts` — no hardcoded company strings in components (structural icon/label maps excepted).
+- Palette tokens (exact): navy-900 `#0A1622`, navy-800 `#0B1F3A`, navy-700 `#13283F`, steel `#6B7280`, gold `#D4AF37`, gold-soft `#E0C074`, paper `#F6F4EF`, ink-900 `#101820`, ink-500 `#56616B`.
+- Fonts: headings **Sora**, body **Inter** (Google Fonts via index.html). Stats use tabular numerals (`tabular-nums`).
+- ALL motion must respect `prefers-reduced-motion` via the shared `useReducedMotion` hook + reduced variants. Hero video is `muted` + `playsInline`.
+- Routes (exact): `/` (landing), `/divisions/:slug` (slugs `grains`, `lng`, `refined-oil`, `crude-oil`), `*` → NotFound. No separate `/about` or `/contact` routes — those are anchor sections (`#about`, `#contact`, etc.) on the landing page.
+- Landing nav uses smooth in-page anchor scroll; division links are real routes. Deep-linking to `/#contact` scrolls to that section after load.
 - No backend; contact form is UI-only (no network request).
-- `npm run build` (tsc + vite build) MUST pass with zero type errors at the end of every task that touches code.
+- `npm run build` (tsc + vite) MUST pass with zero type errors at the end of every code task.
+- Use the React automatic JSX runtime; import `type { ... } from 'react'` / `'framer-motion'` as needed (no reliance on a global `React` namespace — import `React` or the specific types).
 
 ---
 
-### Task 1: Scaffold project (Vite + React + TS + Tailwind + Router + Vitest)
+### Task 1: Scaffold — COMPLETE (commit b802a2c)
+
+Vite + React + TS + Tailwind + Router + Vitest scaffold with Sora/Inter fonts and a placeholder Home is already in place. Task 2 upgrades its theme/deps to v2. No action needed beyond awareness of existing files: `tailwind.config.js`, `src/index.css`, `src/main.tsx`, `src/App.tsx`, `src/pages/Home.tsx` (placeholder, will be replaced), `vitest.config.ts`, `src/test/setup.ts`.
+
+---
+
+### Task 2: Foundation upgrade — v2 theme, framer-motion, hooks, motion variants, Reveal
 
 **Files:**
-- Create: `package.json`, `vite.config.ts`, `tsconfig.json`, `tsconfig.node.json`, `tailwind.config.js`, `postcss.config.js`, `index.html`, `src/main.tsx`, `src/App.tsx`, `src/index.css`, `src/pages/Home.tsx`, `vitest.config.ts`, `src/test/setup.ts`
+- Modify: `tailwind.config.js`, `src/index.css`, `package.json` (add framer-motion)
+- Create: `src/hooks/useReducedMotion.ts`, `src/hooks/useScrolled.ts`, `src/lib/motion.ts`, `src/components/Reveal.tsx`
 
 **Interfaces:**
-- Produces: a running Vite app at `/` rendering a placeholder Home; Tailwind theme tokens available as `bg-navy-900`, `text-accent`, etc.; `npm run build`, `npm run dev`, `npm test` scripts.
+- Produces:
+  - Tailwind tokens: `navy.900/800/700`, `steel`, `gold` (DEFAULT) + `gold.soft`, `paper`, `ink.900/500`; `font-display` (Sora) / `font-sans` (Inter); `maxWidth.content` `1200px`.
+  - `usePrefersReducedMotion(): boolean`
+  - `useScrolled(threshold?: number): boolean` — true once `window.scrollY > threshold` (default 24)
+  - `lib/motion.ts`: `fadeUp` (Variants), `stagger(gap?: number)` (Variants), `reduced` (Variants) — and a helper `reveal(reducedMotion: boolean)` returning the variants to use.
+  - `Reveal({ children, className?, delay?, as? })` — Framer Motion `whileInView` wrapper (`once: true`, viewport margin), reduced-motion aware.
 
-- [ ] **Step 1: Create the project scaffold**
-
-```bash
-cd ~/ntagroup
-npm create vite@latest . -- --template react-ts
-# If prompted about non-empty dir, choose "Ignore files and continue"
-```
-
-- [ ] **Step 2: Install dependencies**
+- [ ] **Step 1: Install framer-motion**
 
 ```bash
-cd ~/ntagroup
-npm install react-router-dom lucide-react
-npm install -D tailwindcss@3.4.15 postcss autoprefixer vitest @testing-library/react @testing-library/jest-dom jsdom
-npx tailwindcss init -p
+cd ~/ntagroup && npm install framer-motion
 ```
 
-- [ ] **Step 3: Configure Tailwind theme** — overwrite `tailwind.config.js`
+- [ ] **Step 2: Overwrite `tailwind.config.js` with v2 tokens**
 
 ```js
 /** @type {import('tailwindcss').Config} */
@@ -57,9 +61,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        navy: { 900: '#0A1622', 800: '#0F1F30', 700: '#16293D' },
-        steel: { 400: '#5B7185' },
-        accent: { DEFAULT: '#C8852F', soft: '#E0A85A' },
+        navy: { 900: '#0A1622', 800: '#0B1F3A', 700: '#13283F' },
+        steel: '#6B7280',
+        gold: { DEFAULT: '#D4AF37', soft: '#E0C074' },
         paper: '#F6F4EF',
         ink: { 900: '#101820', 500: '#56616B' },
       },
@@ -74,120 +78,138 @@ export default {
 }
 ```
 
-- [ ] **Step 4: Set up `index.html`** — replace `<head>` font links and title
-
-```html
-<!-- inside <head> of index.html -->
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@500;600;700&display=swap" rel="stylesheet" />
-<title>NTA Group — Global Commodity Trading</title>
-```
-
-- [ ] **Step 5: Write `src/index.css`**
+- [ ] **Step 3: Overwrite `src/index.css`** (tokens, base, glass + button utilities)
 
 ```css
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: light; }
+:root { color-scheme: dark; }
 * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 html { scroll-behavior: smooth; }
-body { margin: 0; background: #F6F4EF; color: #101820; font-family: 'Inter', system-ui, sans-serif; }
+body { margin: 0; background: #0A1622; color: #F6F4EF; font-family: 'Inter', system-ui, sans-serif; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
 @layer components {
   .container-x { @apply mx-auto w-full max-w-content px-5 sm:px-8 lg:px-10; }
-  .btn-accent { @apply inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-soft; }
+  .glass { @apply border border-white/10 bg-white/[0.04] backdrop-blur-md; }
+  .btn-gold { @apply inline-flex items-center gap-2 rounded-full bg-gold px-6 py-3 text-sm font-medium text-navy-900 transition-colors hover:bg-gold-soft; }
   .btn-ghost { @apply inline-flex items-center gap-2 rounded-full border border-white/25 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10; }
-  .eyebrow { @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-accent; }
+  .eyebrow { @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold; }
+  .rule-gold { @apply h-px w-12 bg-gold; }
 }
 ```
 
-- [ ] **Step 6: Write placeholder `src/pages/Home.tsx`**
+- [ ] **Step 4: Write `src/hooks/useReducedMotion.ts`**
 
-```tsx
-export default function Home() {
-  return <div className="container-x py-20"><h1 className="font-display text-4xl">NTA Group</h1></div>
+```ts
+import { useEffect, useState } from 'react'
+
+export function usePrefersReducedMotion(): boolean {
+  const [reduced, setReduced] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setReduced(mq.matches)
+    const onChange = () => setReduced(mq.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
+  return reduced
 }
 ```
 
-- [ ] **Step 7: Write `src/App.tsx` (router shell)**
+- [ ] **Step 5: Write `src/hooks/useScrolled.ts`**
+
+```ts
+import { useEffect, useState } from 'react'
+
+export function useScrolled(threshold = 24): boolean {
+  const [scrolled, setScrolled] = useState(false)
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > threshold)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [threshold])
+  return scrolled
+}
+```
+
+- [ ] **Step 6: Write `src/lib/motion.ts`**
+
+```ts
+import type { Variants } from 'framer-motion'
+
+export const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
+}
+
+export const reduced: Variants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.2 } },
+}
+
+export function stagger(gap = 0.08): Variants {
+  return { hidden: {}, visible: { transition: { staggerChildren: gap } } }
+}
+
+export function reveal(reducedMotion: boolean): Variants {
+  return reducedMotion ? reduced : fadeUp
+}
+```
+
+- [ ] **Step 7: Write `src/components/Reveal.tsx`**
 
 ```tsx
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Home from './pages/Home'
+import { motion } from 'framer-motion'
+import type { ReactNode } from 'react'
+import { usePrefersReducedMotion } from '../hooks/useReducedMotion'
+import { reveal } from '../lib/motion'
 
-export default function App() {
+export default function Reveal({ children, className = '', delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
+  const reducedMotion = usePrefersReducedMotion()
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-      </Routes>
-    </BrowserRouter>
+    <motion.div
+      className={className}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: '0px 0px -10% 0px' }}
+      variants={reveal(reducedMotion)}
+      transition={{ delay }}
+    >
+      {children}
+    </motion.div>
   )
 }
 ```
 
-- [ ] **Step 8: Ensure `src/main.tsx` imports css and renders App**
-
-```tsx
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App'
-import './index.css'
-
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)
-```
-
-- [ ] **Step 9: Configure Vitest** — create `vitest.config.ts` and `src/test/setup.ts`, add `"test": "vitest run"` to `package.json` scripts
-
-`vitest.config.ts`:
-```ts
-import { defineConfig } from 'vitest/config'
-import react from '@vitejs/plugin-react'
-
-export default defineConfig({
-  plugins: [react()],
-  test: { environment: 'jsdom', globals: true, setupFiles: ['./src/test/setup.ts'] },
-})
-```
-
-`src/test/setup.ts`:
-```ts
-import '@testing-library/jest-dom'
-```
-
-Add to `package.json` `"scripts"`: `"test": "vitest run"`.
-
-- [ ] **Step 10: Verify build and dev**
+- [ ] **Step 8: Verify build**
 
 Run: `cd ~/ntagroup && npm run build`
-Expected: tsc + vite build succeed, no type errors, `dist/` produced.
+Expected: PASS, no type errors.
 
-- [ ] **Step 11: Commit**
+- [ ] **Step 9: Commit**
 
 ```bash
 cd ~/ntagroup && git add -A
-git commit -m "feat: scaffold Vite+React+TS+Tailwind+Router+Vitest with theme tokens"
+git commit -m "feat: upgrade foundation to v2 (gold theme, framer-motion, hooks, motion variants, Reveal)"
 ```
 
 ---
 
-### Task 2: Company config (single source of truth) + tests
+### Task 3: Company config (single source of truth) + tests
 
 **Files:**
 - Create: `src/config/company.ts`, `src/config/company.test.ts`
 
 **Interfaces:**
 - Produces:
-  - `type Division = { slug: string; nav: string; title: string; tagline: string; icon: string; summary: string; overview: string; trades: string[]; operations: { title: string; body: string }[] }`
-  - `company` object: `{ name: string; legalName: string; tagline: string; intro: string; about: { story: string; mission: string; vision: string; values: { title: string; body: string }[]; whyUae: string }; stats: { value: string; label: string }[]; capabilities: { title: string; body: string }[]; contact: { addressLines: string[]; phone: string; email: string; hours: string }; foundedYear: number }`
-  - `divisions: Division[]` (exactly 4, slugs `grains`, `lng`, `refined-oil`, `crude-oil`)
+  - `type Division = { slug: string; nav: string; title: string; tagline: string; icon: string; summary: string; overview: string; trades: string[]; services: string[]; image: string }`
+  - `type Market = { name: string; x: number; y: number }` — x/y are percentages (0–100) on the stylized world map.
+  - `company` object: `{ name; legalName; foundedYear; tagline; heroHeadline; heroSub; about: { lead; body }; capabilities: { title; body }[]; stats: { value; label }[]; markets: Market[]; sustainability: { title; body }[]; contact: { addressLines: string[]; phone; email; hours }; heroVideo: string; heroPoster: string }`
+  - `divisions: Division[]` (exactly 4, slugs in order `grains`, `lng`, `refined-oil`, `crude-oil`)
   - `getDivisionBySlug(slug: string): Division | undefined`
 
 - [ ] **Step 1: Write the failing test** — `src/config/company.test.ts`
@@ -197,31 +219,36 @@ import { describe, it, expect } from 'vitest'
 import { company, divisions, getDivisionBySlug } from './company'
 
 describe('company config', () => {
-  it('has exactly four divisions with the expected slugs', () => {
+  it('has four divisions with expected slugs in order', () => {
     expect(divisions.map((d) => d.slug)).toEqual(['grains', 'lng', 'refined-oil', 'crude-oil'])
   })
-  it('every division has non-empty content', () => {
+  it('every division has full content', () => {
     for (const d of divisions) {
       expect(d.title.length).toBeGreaterThan(0)
       expect(d.tagline.length).toBeGreaterThan(0)
       expect(d.overview.length).toBeGreaterThan(0)
       expect(d.trades.length).toBeGreaterThan(0)
-      expect(d.operations.length).toBeGreaterThan(0)
+      expect(d.services.length).toBeGreaterThan(0)
     }
   })
-  it('getDivisionBySlug returns the matching division or undefined', () => {
+  it('getDivisionBySlug resolves or returns undefined', () => {
     expect(getDivisionBySlug('lng')?.title).toContain('Liquefied Natural Gas')
     expect(getDivisionBySlug('nope')).toBeUndefined()
   })
-  it('exposes core company fields', () => {
+  it('exposes core fields, markets and stats', () => {
     expect(company.name).toBe('NTA Group')
     expect(company.contact.email).toMatch(/@ntagroup\.ae$/)
     expect(company.stats.length).toBeGreaterThanOrEqual(3)
+    expect(company.markets.length).toBeGreaterThanOrEqual(8)
+    for (const m of company.markets) {
+      expect(m.x).toBeGreaterThanOrEqual(0); expect(m.x).toBeLessThanOrEqual(100)
+      expect(m.y).toBeGreaterThanOrEqual(0); expect(m.y).toBeLessThanOrEqual(100)
+    }
   })
 })
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [ ] **Step 2: Run test — verify it fails**
 
 Run: `cd ~/ntagroup && npx vitest run src/config/company.test.ts`
 Expected: FAIL — cannot resolve `./company`.
@@ -238,8 +265,11 @@ export type Division = {
   summary: string
   overview: string
   trades: string[]
-  operations: { title: string; body: string }[]
+  services: string[]
+  image: string
 }
+
+export type Market = { name: string; x: number; y: number }
 
 export const divisions: Division[] = [
   {
@@ -248,33 +278,25 @@ export const divisions: Division[] = [
     title: 'Grains, Cereals & Legumes Trading',
     tagline: 'Feeding markets with reliable agri-commodity supply.',
     icon: 'Wheat',
-    summary: 'Wheat, maize, rice, pulses and oilseeds sourced and delivered at scale.',
+    summary: 'Wheat, maize, rice, pulses and oilseeds sourced and delivered at global scale.',
     overview:
-      'NTA Group sources grains, cereals and legumes from leading producing regions and delivers them to mills, processors and distributors worldwide. We combine deep origination relationships with disciplined logistics to keep supply moving reliably across seasons and price cycles.',
-    trades: ['Wheat (milling & feed)', 'Corn / Maize', 'Barley', 'Rice', 'Soybeans & oilseeds', 'Pulses — lentils, chickpeas, beans'],
-    operations: [
-      { title: 'Origination', body: 'Direct relationships with growers, co-operatives and exporters across major producing regions.' },
-      { title: 'Quality assurance', body: 'Independent inspection and certification at load and discharge to agreed specifications.' },
-      { title: 'Logistics', body: 'Bulk and containerised shipping, inland haulage and storage coordinated end to end.' },
-      { title: 'Settlement', body: 'Transparent contracts on CIF/FOB terms with documentary credit and secure payment handling.' },
-    ],
+      'NTA Group sources grains, cereals and legumes from leading producing regions and delivers them to mills, processors and distributors worldwide. We pair deep origination relationships with disciplined logistics to keep supply moving reliably across seasons and price cycles.',
+    trades: ['Wheat', 'Corn / Maize', 'Barley', 'Rice', 'Soybeans & oilseeds', 'Lentils', 'Chickpeas', 'Beans', 'Peas'],
+    services: ['Global sourcing', 'Bulk procurement', 'Export & import facilitation', 'Supply-chain management', 'Commodity risk management'],
+    image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=1200&q=80',
   },
   {
     slug: 'lng',
-    nav: 'Natural Gas',
+    nav: 'Industrial & LNG',
     title: 'Industrial & Liquefied Natural Gas Trading',
     tagline: 'Cleaner energy, dependably delivered.',
     icon: 'Flame',
-    summary: 'LNG, LPG and industrial gas supply backed by terminal and shipping logistics.',
+    summary: 'LNG, natural gas and industrial gas solutions backed by international supply.',
     overview:
-      'We trade liquefied natural gas, LPG and industrial gases, connecting producers with industrial and utility buyers. From spot cargoes to term supply, NTA Group manages contracting, shipping and terminal logistics to deliver dependable energy across borders.',
-    trades: ['Liquefied Natural Gas (LNG)', 'Liquefied Petroleum Gas (LPG)', 'Industrial gases', 'Spot & term supply contracts'],
-    operations: [
-      { title: 'Supply contracts', body: 'Flexible spot and term structures matched to buyer demand profiles.' },
-      { title: 'Shipping & chartering', body: 'Vessel nomination and voyage management for safe, on-time cargo delivery.' },
-      { title: 'Terminal logistics', body: 'Regasification, storage and offtake coordination at destination terminals.' },
-      { title: 'Compliance', body: 'Full adherence to international safety, environmental and trade-control standards.' },
-    ],
+      'We trade liquefied natural gas, natural gas and industrial gases, connecting producers with industrial and utility buyers. From spot cargoes to long-term agreements, NTA Group manages contracting, shipping and cross-border logistics to deliver dependable energy.',
+    trades: ['Liquefied Natural Gas (LNG)', 'Natural gas', 'Industrial gas solutions'],
+    services: ['International LNG supply', 'Long-term supply agreements', 'Industrial gas procurement', 'Cross-border solutions'],
+    image: 'https://images.unsplash.com/photo-1605557202138-c7a5f6e6e8b9?auto=format&fit=crop&w=1200&q=80',
   },
   {
     slug: 'refined-oil',
@@ -282,16 +304,12 @@ export const divisions: Division[] = [
     title: 'Trading Refined Oil Products Abroad',
     tagline: 'Refined products moving where they are needed most.',
     icon: 'Fuel',
-    summary: 'Gasoil, jet fuel, gasoline, fuel oil, naphtha and bitumen across international markets.',
+    summary: 'Diesel, gasoline, jet fuel, fuel oil, naphtha, base oils and marine fuels.',
     overview:
-      'NTA Group trades a full slate of refined petroleum products in international markets, bridging refineries and end-users. We arbitrage regional supply and demand, manage cargo logistics and deliver products reliably under recognised international terms.',
-    trades: ['Gasoil / Diesel', 'Jet fuel (Jet A-1)', 'Gasoline', 'Fuel oil', 'Naphtha', 'Bitumen'],
-    operations: [
-      { title: 'Market access', body: 'Established buyer and refiner networks across multiple regional markets.' },
-      { title: 'Cargo logistics', body: 'Coordinated tanker shipping, storage and blending where required.' },
-      { title: 'Risk management', body: 'Price and credit risk managed with disciplined hedging and counterparty review.' },
-      { title: 'Delivery terms', body: 'Trades executed on CIF, FOB and other recognised Incoterms.' },
-    ],
+      'NTA Group trades a full slate of refined petroleum products in international markets, bridging refineries and end-users. We arbitrage regional supply and demand, coordinate cargo logistics and deliver products reliably under recognised international terms.',
+    trades: ['Diesel', 'Gasoline', 'Jet fuel', 'Fuel oil', 'Naphtha', 'Base oils', 'Marine fuels'],
+    services: ['International trading', 'Bulk supply contracts', 'Logistics coordination', 'Strategic procurement'],
+    image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80',
   },
   {
     slug: 'crude-oil',
@@ -299,16 +317,12 @@ export const divisions: Division[] = [
     title: 'Crude Oil Trading Abroad',
     tagline: 'Crude cargoes connecting producers to global refineries.',
     icon: 'Droplets',
-    summary: 'Crude grade cargo trading, chartering and international delivery.',
+    summary: 'Spot and term crude trading with global market access.',
     overview:
-      'We trade crude oil cargoes internationally, linking producing nations with refining centres. NTA Group manages grade selection, chartering and delivery logistics to move crude efficiently and securely across global trade routes.',
-    trades: ['Multiple crude grades', 'Spot cargo trading', 'Chartering & freight', 'CIF / FOB delivery'],
-    operations: [
-      { title: 'Sourcing', body: 'Access to diverse crude grades through established producer relationships.' },
-      { title: 'Chartering', body: 'Tanker chartering and voyage management for reliable cargo movement.' },
-      { title: 'Quality & inspection', body: 'Independent verification of grade, quantity and quality at each stage.' },
-      { title: 'Settlement', body: 'Secure documentary processes and trusted banking partners on every trade.' },
-    ],
+      'We trade crude oil internationally, linking producing nations with refining centres. NTA Group manages spot transactions, long-term agreements and contract structuring to move crude efficiently and securely across global trade routes.',
+    trades: ['Spot transactions', 'Long-term supply agreements', 'Multiple crude grades'],
+    services: ['Global market access', 'Contract structuring', 'Trading support', 'Logistics & chartering'],
+    image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1200&q=80',
   },
 ]
 
@@ -316,36 +330,45 @@ export const company = {
   name: 'NTA Group',
   legalName: 'NTA Group Trading L.L.C.',
   foundedYear: 2014,
-  tagline: 'Connecting global markets in energy and agri-commodities.',
-  intro:
-    'NTA Group is a UAE-headquartered multi-commodity trading house. From our base at the crossroads of global trade, we move grains, gas, refined products and crude oil between the world’s producers and markets — reliably, transparently and at scale.',
+  tagline: 'Powering global trade through energy and agricultural commodities.',
+  heroHeadline: 'Powering Global Trade Through Energy & Agricultural Commodities.',
+  heroSub:
+    'A UAE-headquartered multi-commodity trading house, moving grains, gas, refined products and crude oil between the world’s producers and markets — reliably and at scale.',
   about: {
-    story:
-      'Founded in the United Arab Emirates, NTA Group has grown into a diversified trading house spanning agriculture and energy. We built our business on long-term relationships, operational discipline and a simple promise: deliver what we commit to, every time.',
-    mission:
-      'To connect producers and markets across continents with dependable, transparent commodity trading and logistics.',
-    vision:
-      'To be a trusted name in global commodity trade — known for integrity, reliability and the strength of our partnerships.',
-    values: [
-      { title: 'Integrity', body: 'We do what we say. Transparent dealing is the foundation of every trade.' },
-      { title: 'Reliability', body: 'Cargoes that arrive as agreed — on spec, on time, on terms.' },
-      { title: 'Global reach', body: 'A network spanning producing regions and demand centres on every continent.' },
-      { title: 'Compliance', body: 'Rigorous adherence to international trade, safety and environmental standards.' },
-    ],
-    whyUae:
-      'The UAE sits at the intersection of East and West, with world-class ports, logistics and financial infrastructure. It gives NTA Group the connectivity, stability and reach to serve markets across Asia, Africa, Europe and beyond.',
+    lead: 'A UAE trading house built for global markets.',
+    body:
+      'From our base at the crossroads of global trade, NTA Group connects producers and markets across continents. We built our business on long-term relationships, operational discipline and a simple promise: deliver what we commit to, every time — across agriculture and energy.',
   },
+  capabilities: [
+    { title: 'Global network', body: 'Producers, refiners, mills and buyers across every major region.' },
+    { title: 'Market expertise', body: 'Deep desk knowledge across agri-commodities and energy.' },
+    { title: 'Reliable supply chains', body: 'Bulk, containerised and tanker logistics coordinated end to end.' },
+    { title: 'Professional compliance', body: 'Rigorous adherence to international trade, safety and sanctions standards.' },
+    { title: 'Strategic partnerships', body: 'Long-term relationships that weather price and supply cycles.' },
+  ],
   stats: [
     { value: '30+', label: 'Countries served' },
     { value: '4', label: 'Commodity verticals' },
     { value: '1M+', label: 'MT traded annually' },
     { value: '10+', label: 'Years of trading' },
   ],
-  capabilities: [
-    { title: 'Global logistics', body: 'Bulk, containerised and tanker shipping coordinated end to end.' },
-    { title: 'Market access', body: 'Established networks of producers, refiners, mills and buyers worldwide.' },
-    { title: 'Trade compliance', body: 'Full adherence to international sanctions, safety and documentation standards.' },
-    { title: 'Reliable settlement', body: 'Secure documentary credit and trusted banking partners on every deal.' },
+  markets: [
+    { name: 'Dubai', x: 65.4, y: 36.0 },
+    { name: 'London', x: 50.0, y: 21.4 },
+    { name: 'Rotterdam', x: 51.3, y: 21.2 },
+    { name: 'Houston', x: 23.5, y: 33.5 },
+    { name: 'São Paulo', x: 37.1, y: 63.1 },
+    { name: 'Lagos', x: 50.9, y: 46.4 },
+    { name: 'Mumbai', x: 70.2, y: 39.4 },
+    { name: 'Singapore', x: 78.8, y: 49.3 },
+    { name: 'Shanghai', x: 83.8, y: 32.7 },
+    { name: 'Tokyo', x: 88.8, y: 30.2 },
+  ],
+  sustainability: [
+    { title: 'Responsible trading', body: 'Ethical, transparent dealing across every counterparty and cargo.' },
+    { title: 'Compliance first', body: 'Full alignment with international sanctions, safety and environmental standards.' },
+    { title: 'Efficient logistics', body: 'Optimised routing and load planning to reduce waste and emissions.' },
+    { title: 'Long-term partnerships', body: 'Durable relationships that support stable, sustainable supply.' },
   ],
   contact: {
     addressLines: ['NTA Group Trading L.L.C.', 'Business Bay, Dubai', 'United Arab Emirates'],
@@ -353,6 +376,8 @@ export const company = {
     email: 'info@ntagroup.ae',
     hours: 'Sunday – Thursday, 9:00 – 18:00 GST',
   },
+  heroVideo: 'https://cdn.coverr.co/videos/coverr-cargo-ship-at-sea-1573/1080p.mp4',
+  heroPoster: 'https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?auto=format&fit=crop&w=1600&q=80',
 }
 
 export function getDivisionBySlug(slug: string): Division | undefined {
@@ -360,7 +385,7 @@ export function getDivisionBySlug(slug: string): Division | undefined {
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [ ] **Step 4: Run test — verify it passes**
 
 Run: `cd ~/ntagroup && npx vitest run src/config/company.test.ts`
 Expected: PASS (4 tests).
@@ -369,118 +394,112 @@ Expected: PASS (4 tests).
 
 ```bash
 cd ~/ntagroup && git add -A
-git commit -m "feat: add company config as single source of truth with tests"
+git commit -m "feat: add company config (divisions, markets, stats, copy) with tests"
 ```
 
 ---
 
-### Task 3: Layout shell — Reveal, ScrollToTop, Header, Footer
+### Task 4: Layout — ScrollManager, glass scroll-aware Header, Footer, Layout
 
 **Files:**
-- Create: `src/components/Reveal.tsx`, `src/components/ScrollToTop.tsx`, `src/components/Header.tsx`, `src/components/Footer.tsx`, `src/components/Layout.tsx`
+- Create: `src/components/ScrollManager.tsx`, `src/components/Header.tsx`, `src/components/Footer.tsx`, `src/components/Layout.tsx`
 - Modify: `src/App.tsx`
 
 **Interfaces:**
-- Consumes: `company`, `divisions` from `src/config/company.ts`.
+- Consumes: `company`, `divisions`; `useScrolled`.
 - Produces:
-  - `Reveal({ children, className?, delay? }: { children: ReactNode; className?: string; delay?: number })` — fades/translates children in on scroll.
-  - `<Layout />` — renders `Header`, `<Outlet />`, `Footer`, includes `ScrollToTop`.
+  - `<ScrollManager />` — on route change: if location has a hash, scroll to that element (after a tick); else scroll to top.
+  - `<Header />` — fixed glass header; transparent at top, solid navy + shadow once scrolled. Nav links are anchor links to landing sections (`/#about`, `/#divisions`, `/#markets`, `/#contact`) + a Divisions dropdown (real routes) + "Get in touch" CTA (`/#contact`). Mobile hamburger sheet.
+  - `<Footer />` — company blurb, division links, contact, copyright.
+  - `<Layout />` — `ScrollManager` + `Header` + `<main><Outlet/></main>` + `Footer`.
 
-- [ ] **Step 1: Write `src/components/Reveal.tsx`**
+**Anchor-link note:** Use `<a href="/#about">` style links (full path + hash) so they work from both the landing page and division pages. `ScrollManager` handles the scroll on navigation.
 
-```tsx
-import { useEffect, useRef, useState, type ReactNode } from 'react'
-
-export default function Reveal({ children, className = '', delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [shown, setShown] = useState(false)
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const io = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { setShown(true); io.disconnect() } },
-      { threshold: 0.15 },
-    )
-    io.observe(el)
-    return () => io.disconnect()
-  }, [])
-  return (
-    <div
-      ref={ref}
-      style={{ transitionDelay: `${delay}ms` }}
-      className={`transition-all duration-700 ease-out ${shown ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'} ${className}`}
-    >
-      {children}
-    </div>
-  )
-}
-```
-
-- [ ] **Step 2: Write `src/components/ScrollToTop.tsx`**
+- [ ] **Step 1: Write `src/components/ScrollManager.tsx`**
 
 ```tsx
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
-export default function ScrollToTop() {
-  const { pathname } = useLocation()
-  useEffect(() => { window.scrollTo(0, 0) }, [pathname])
+export default function ScrollManager() {
+  const { pathname, hash } = useLocation()
+  useEffect(() => {
+    if (hash) {
+      const id = hash.slice(1)
+      requestAnimationFrame(() => {
+        const el = document.getElementById(id)
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        else window.scrollTo(0, 0)
+      })
+    } else {
+      window.scrollTo(0, 0)
+    }
+  }, [pathname, hash])
   return null
 }
 ```
 
-- [ ] **Step 3: Write `src/components/Header.tsx`**
+- [ ] **Step 2: Write `src/components/Header.tsx`**
 
 ```tsx
 import { useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { Menu, X, ChevronDown, ArrowRight } from 'lucide-react'
 import { divisions } from '../config/company'
+import { useScrolled } from '../hooks/useScrolled'
+
+const ANCHORS = [
+  { label: 'About', href: '/#about' },
+  { label: 'Divisions', href: '/#divisions' },
+  { label: 'Global Markets', href: '/#markets' },
+  { label: 'Sustainability', href: '/#sustainability' },
+]
 
 export default function Header() {
   const [open, setOpen] = useState(false)
+  const scrolled = useScrolled()
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-navy-900/95 backdrop-blur">
+    <header className={`fixed inset-x-0 top-0 z-40 transition-colors duration-300 ${scrolled ? 'border-b border-white/10 bg-navy-900/90 backdrop-blur-md' : 'bg-transparent'}`}>
       <div className="container-x flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-2 text-white">
-          <span className="flex h-9 w-9 items-center justify-center rounded bg-accent font-display text-sm font-bold">NTA</span>
+          <span className="flex h-9 w-9 items-center justify-center rounded bg-gold font-display text-sm font-bold text-navy-900">NTA</span>
           <span className="font-display text-lg font-semibold tracking-tight">NTA Group</span>
         </Link>
 
-        <nav className="hidden items-center gap-7 md:flex">
-          <NavLink to="/about" className="text-sm text-steel-400 transition-colors hover:text-white">About</NavLink>
+        <nav className="hidden items-center gap-7 lg:flex">
+          {ANCHORS.map((a) => (
+            <a key={a.href} href={a.href} className="text-sm text-white/70 transition-colors hover:text-white">{a.label}</a>
+          ))}
           <div className="group relative">
-            <button className="flex items-center gap-1 text-sm text-steel-400 transition-colors hover:text-white">
-              Divisions <ChevronDown size={14} />
-            </button>
-            <div className="invisible absolute left-1/2 top-full w-64 -translate-x-1/2 pt-3 opacity-0 transition-all group-hover:visible group-hover:opacity-100">
-              <div className="rounded-xl border border-white/10 bg-navy-800 p-2 shadow-xl">
+            <button className="flex items-center gap-1 text-sm text-white/70 transition-colors hover:text-white">Our Divisions <ChevronDown size={14} /></button>
+            <div className="invisible absolute left-1/2 top-full w-72 -translate-x-1/2 pt-3 opacity-0 transition-all group-hover:visible group-hover:opacity-100">
+              <div className="glass rounded-xl p-2 shadow-xl">
                 {divisions.map((d) => (
-                  <NavLink key={d.slug} to={`/divisions/${d.slug}`} className="block rounded-lg px-3 py-2 text-sm text-steel-400 transition-colors hover:bg-navy-700 hover:text-white">
-                    {d.title}
-                  </NavLink>
+                  <Link key={d.slug} to={`/divisions/${d.slug}`} className="block rounded-lg px-3 py-2 text-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white">{d.title}</Link>
                 ))}
               </div>
             </div>
           </div>
-          <Link to="/contact" className="btn-accent !px-5 !py-2">Get in touch <ArrowRight size={15} /></Link>
+          <a href="/#contact" className="btn-gold !px-5 !py-2">Get in touch <ArrowRight size={15} /></a>
         </nav>
 
-        <button className="text-white md:hidden" onClick={() => setOpen(true)} aria-label="Open menu"><Menu /></button>
+        <button className="text-white lg:hidden" onClick={() => setOpen(true)} aria-label="Open menu"><Menu /></button>
       </div>
 
       {open && (
-        <div className="fixed inset-0 z-50 bg-navy-900 md:hidden">
+        <div className="fixed inset-0 z-50 bg-navy-900 lg:hidden">
           <div className="container-x flex h-16 items-center justify-between">
             <span className="font-display text-lg font-semibold text-white">NTA Group</span>
             <button className="text-white" onClick={() => setOpen(false)} aria-label="Close menu"><X /></button>
           </div>
           <nav className="container-x flex flex-col gap-1 pt-6">
-            <NavLink to="/about" onClick={() => setOpen(false)} className="py-3 font-display text-2xl text-white">About</NavLink>
-            {divisions.map((d) => (
-              <NavLink key={d.slug} to={`/divisions/${d.slug}`} onClick={() => setOpen(false)} className="py-3 font-display text-2xl text-white">{d.nav}</NavLink>
+            {ANCHORS.map((a) => (
+              <a key={a.href} href={a.href} onClick={() => setOpen(false)} className="py-3 font-display text-2xl text-white">{a.label}</a>
             ))}
-            <Link to="/contact" onClick={() => setOpen(false)} className="btn-accent mt-6 justify-center">Get in touch <ArrowRight size={16} /></Link>
+            {divisions.map((d) => (
+              <Link key={d.slug} to={`/divisions/${d.slug}`} onClick={() => setOpen(false)} className="py-3 font-display text-2xl text-white">{d.nav}</Link>
+            ))}
+            <a href="/#contact" onClick={() => setOpen(false)} className="btn-gold mt-6 justify-center">Get in touch <ArrowRight size={16} /></a>
           </nav>
         </div>
       )}
@@ -489,7 +508,7 @@ export default function Header() {
 }
 ```
 
-- [ ] **Step 4: Write `src/components/Footer.tsx`**
+- [ ] **Step 3: Write `src/components/Footer.tsx`**
 
 ```tsx
 import { Link } from 'react-router-dom'
@@ -498,7 +517,7 @@ import { company, divisions } from '../config/company'
 
 export default function Footer() {
   return (
-    <footer className="bg-navy-900 text-steel-400">
+    <footer className="border-t border-white/10 bg-navy-900 text-white/60">
       <div className="container-x grid gap-10 py-16 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
           <span className="font-display text-xl font-semibold text-white">NTA Group</span>
@@ -508,16 +527,16 @@ export default function Footer() {
           <h4 className="mb-4 text-xs font-semibold uppercase tracking-widest text-white">Divisions</h4>
           <ul className="space-y-2 text-sm">
             {divisions.map((d) => (
-              <li key={d.slug}><Link to={`/divisions/${d.slug}`} className="transition-colors hover:text-white">{d.nav}</Link></li>
+              <li key={d.slug}><Link to={`/divisions/${d.slug}`} className="transition-colors hover:text-gold">{d.nav}</Link></li>
             ))}
           </ul>
         </div>
         <div>
           <h4 className="mb-4 text-xs font-semibold uppercase tracking-widest text-white">Contact</h4>
           <ul className="space-y-2 text-sm">
-            <li className="flex gap-2"><MapPin size={16} className="mt-0.5 shrink-0 text-accent" /><span>{company.contact.addressLines.join(', ')}</span></li>
-            <li className="flex gap-2"><Phone size={16} className="shrink-0 text-accent" />{company.contact.phone}</li>
-            <li className="flex gap-2"><Mail size={16} className="shrink-0 text-accent" />{company.contact.email}</li>
+            <li className="flex gap-2"><MapPin size={16} className="mt-0.5 shrink-0 text-gold" /><span>{company.contact.addressLines.join(', ')}</span></li>
+            <li className="flex gap-2"><Phone size={16} className="shrink-0 text-gold" />{company.contact.phone}</li>
+            <li className="flex gap-2"><Mail size={16} className="shrink-0 text-gold" />{company.contact.email}</li>
           </ul>
         </div>
       </div>
@@ -529,18 +548,18 @@ export default function Footer() {
 }
 ```
 
-- [ ] **Step 5: Write `src/components/Layout.tsx`**
+- [ ] **Step 4: Write `src/components/Layout.tsx`**
 
 ```tsx
 import { Outlet } from 'react-router-dom'
 import Header from './Header'
 import Footer from './Footer'
-import ScrollToTop from './ScrollToTop'
+import ScrollManager from './ScrollManager'
 
 export default function Layout() {
   return (
     <>
-      <ScrollToTop />
+      <ScrollManager />
       <Header />
       <main><Outlet /></main>
       <Footer />
@@ -549,7 +568,7 @@ export default function Layout() {
 }
 ```
 
-- [ ] **Step 6: Wire Layout into `src/App.tsx`**
+- [ ] **Step 5: Wire Layout into `src/App.tsx`** (Home still placeholder for now)
 
 ```tsx
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
@@ -569,32 +588,75 @@ export default function App() {
 }
 ```
 
-- [ ] **Step 7: Verify build**
+- [ ] **Step 6: Verify build**
 
 Run: `cd ~/ntagroup && npm run build`
 Expected: PASS, no type errors.
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
 cd ~/ntagroup && git add -A
-git commit -m "feat: add Layout shell (Header, Footer, Reveal, ScrollToTop)"
+git commit -m "feat: add Layout (glass scroll-aware Header, Footer, ScrollManager)"
 ```
 
 ---
 
-### Task 4: Home page + shared section components
+### Task 5: Hero + animated canvas fallback
 
 **Files:**
-- Create: `src/components/DivisionCard.tsx`, `src/components/StatStrip.tsx`, `src/components/CTABand.tsx`, `src/components/Icon.tsx`
-- Modify: `src/pages/Home.tsx`
+- Create: `src/components/HeroCanvas.tsx`, `src/components/Hero.tsx`
 
 **Interfaces:**
-- Consumes: `company`, `divisions`, `Division` from config; `Reveal`.
+- Consumes: `company` (heroHeadline, heroSub, heroVideo, heroPoster); `usePrefersReducedMotion`; framer-motion.
+- Produces: `<HeroCanvas className?>` (full-bleed animated canvas) and `<Hero />` (full-screen hero section, `id="hero"`).
+
+**HeroCanvas spec (implement faithfully; this is judgment work):**
+A full-bleed `<canvas>` that fills its parent and renders an animated dark "global trade" motif: a faint rotating wireframe globe (a circle with several latitude ellipses + longitude arcs) centred right-of-centre, a handful of glowing **gold** (`#D4AF37`) great-circle-style arcs that animate (e.g. a travelling dash/comet along quadratic-bezier curves), and slowly drifting small particles. Requirements:
+- Size to `devicePixelRatio`; handle resize via `ResizeObserver` on the parent; clean up RAF + observer on unmount.
+- If `usePrefersReducedMotion()` is true, render a single static frame (no RAF loop).
+- Pure canvas 2D, no external libs. Subtle and dark — it sits behind hero text. Keep under ~150 lines.
+
+**Hero spec:**
+- Full-screen `<section id="hero" className="relative h-[100svh] min-h-[640px] overflow-hidden bg-navy-900">`.
+- Background layer order (absolute inset-0): (a) `<video>` muted/loop/playsInline/autoPlay with `poster={company.heroPoster}`, `object-cover`, hidden if it errors or on reduced-motion; (b) `<HeroCanvas>` shown when video is hidden/errored OR on reduced-motion (always rendered as the dark base, video layered over it when available); (c) a navy gradient overlay (`bg-gradient-to-t from-navy-900 via-navy-900/70 to-navy-900/40`) for text legibility.
+- Track video error with `onError` → set state to hide video and reveal canvas. On reduced-motion, don't autoplay video (render canvas static frame instead).
+- Foreground (relative z-10, container-x, bottom-aligned with flarge top padding): eyebrow "UAE-based commodity trading", motion-animated H1 `company.heroHeadline` (gold accent on a key phrase acceptable), `company.heroSub`, two CTAs — `<a href="/#divisions" className="btn-gold">Explore Our Divisions</a>` and `<a href="/#contact" className="btn-ghost">Contact Our Trading Team</a>` — and a subtle scroll cue at the bottom.
+- Hero text entrance uses framer-motion `initial/animate` with reduced-motion fallback (no transform when reduced).
+
+- [ ] **Step 1: Write `src/components/HeroCanvas.tsx`** per the spec above (canvas globe + gold arcs + particles, dpr-aware, ResizeObserver, reduced-motion static frame, RAF cleanup).
+
+- [ ] **Step 2: Write `src/components/Hero.tsx`** per the spec above (video + canvas fallback + gradient + foreground content + CTAs + scroll cue).
+
+- [ ] **Step 3: Verify build**
+
+Run: `cd ~/ntagroup && npm run build`
+Expected: PASS, no type errors.
+
+- [ ] **Step 4: Manual check**
+
+Run: `cd ~/ntagroup && npm run dev`, load `/`, confirm hero fills viewport, headline/CTAs visible and legible, canvas animates (or video plays). Stop dev server.
+
+- [ ] **Step 5: Commit**
+
+```bash
+cd ~/ntagroup && git add -A
+git commit -m "feat: add cinematic hero with animated canvas globe fallback"
+```
+
+---
+
+### Task 6: Landing sections A — About, Divisions (+ DivisionCard), Why NTA
+
+**Files:**
+- Create: `src/components/DivisionCard.tsx`, `src/components/Icon.tsx`, `src/sections/About.tsx`, `src/sections/Divisions.tsx`, `src/sections/WhyNTA.tsx`
+
+**Interfaces:**
+- Consumes: `company`, `divisions`, `Division`; `Reveal`.
 - Produces:
-  - `Icon({ name, ...props })` — maps a string name to a lucide icon (`Wheat`, `Flame`, `Fuel`, `Droplets`, plus fallback).
-  - `DivisionCard({ division }: { division: Division })`
-  - `StatStrip()`, `CTABand({ title?, body? })`
+  - `Icon({ name, ...props })` — maps `Wheat`, `Flame`, `Fuel`, `Droplets` (+ fallback `Box`) to lucide icons.
+  - `DivisionCard({ division })` — glass card linking to `/divisions/${slug}`.
+  - Section components `<About />` (`id="about"`), `<Divisions />` (`id="divisions"`), `<WhyNTA />` (`id="why"`).
 
 - [ ] **Step 1: Write `src/components/Icon.tsx`**
 
@@ -619,139 +681,86 @@ import type { Division } from '../config/company'
 
 export default function DivisionCard({ division }: { division: Division }) {
   return (
-    <Link to={`/divisions/${division.slug}`} className="group flex flex-col rounded-2xl border border-ink-900/10 bg-white p-7 transition-all hover:-translate-y-1 hover:border-accent/40 hover:shadow-xl">
-      <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-navy-900 text-accent"><Icon name={division.icon} size={22} /></span>
-      <h3 className="mt-5 font-display text-lg font-semibold text-ink-900">{division.title}</h3>
-      <p className="mt-2 flex-1 text-sm leading-relaxed text-ink-500">{division.summary}</p>
-      <span className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-accent">Explore <ArrowUpRight size={16} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" /></span>
+    <Link to={`/divisions/${division.slug}`} className="group flex flex-col rounded-2xl border border-white/10 bg-white/[0.04] p-7 backdrop-blur-md transition-all hover:-translate-y-1 hover:border-gold/40">
+      <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-gold/15 text-gold"><Icon name={division.icon} size={22} /></span>
+      <h3 className="mt-5 font-display text-lg font-semibold text-white">{division.title}</h3>
+      <p className="mt-2 flex-1 text-sm leading-relaxed text-white/60">{division.summary}</p>
+      <span className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-gold">Explore <ArrowUpRight size={16} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" /></span>
     </Link>
   )
 }
 ```
 
-- [ ] **Step 3: Write `src/components/StatStrip.tsx`**
+- [ ] **Step 3: Write `src/sections/About.tsx`**
 
 ```tsx
 import { company } from '../config/company'
+import Reveal from '../components/Reveal'
 
-export default function StatStrip() {
+export default function About() {
   return (
-    <section className="bg-navy-900">
-      <div className="container-x grid grid-cols-2 gap-8 py-16 md:grid-cols-4">
-        {company.stats.map((s) => (
-          <div key={s.label}>
-            <div className="font-display text-4xl font-bold text-accent">{s.value}</div>
-            <div className="mt-2 text-sm text-steel-400">{s.label}</div>
-          </div>
-        ))}
+    <section id="about" className="bg-navy-900">
+      <div className="container-x grid gap-10 py-24 lg:grid-cols-[0.9fr_1.1fr]">
+        <Reveal>
+          <span className="eyebrow">Who we are</span>
+          <h2 className="mt-4 font-display text-3xl font-bold leading-tight text-white sm:text-4xl">{company.about.lead}</h2>
+        </Reveal>
+        <Reveal delay={0.1}>
+          <p className="text-lg leading-relaxed text-white/70">{company.about.body}</p>
+        </Reveal>
       </div>
     </section>
   )
 }
 ```
 
-- [ ] **Step 4: Write `src/components/CTABand.tsx`**
+- [ ] **Step 4: Write `src/sections/Divisions.tsx`**
 
 ```tsx
-import { Link } from 'react-router-dom'
-import { ArrowRight } from 'lucide-react'
-
-export default function CTABand({ title = "Let's trade.", body = 'Talk to our team about your sourcing or offtake requirements.' }: { title?: string; body?: string }) {
-  return (
-    <section className="bg-accent">
-      <div className="container-x flex flex-col items-start gap-6 py-16 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h2 className="font-display text-3xl font-bold text-white">{title}</h2>
-          <p className="mt-2 max-w-md text-white/90">{body}</p>
-        </div>
-        <Link to="/contact" className="inline-flex items-center gap-2 rounded-full bg-navy-900 px-7 py-3.5 text-sm font-medium text-white transition-colors hover:bg-navy-800">Contact us <ArrowRight size={16} /></Link>
-      </div>
-    </section>
-  )
-}
-```
-
-- [ ] **Step 5: Write `src/pages/Home.tsx`**
-
-```tsx
-import { Link } from 'react-router-dom'
-import { ArrowRight } from 'lucide-react'
-import { company, divisions } from '../config/company'
+import { divisions } from '../config/company'
 import Reveal from '../components/Reveal'
 import DivisionCard from '../components/DivisionCard'
-import StatStrip from '../components/StatStrip'
-import CTABand from '../components/CTABand'
 
-export default function Home() {
+export default function Divisions() {
   return (
-    <>
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-navy-900">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(200,133,47,0.18),transparent_55%)]" />
-        <div className="container-x relative grid gap-10 py-24 lg:grid-cols-[1.1fr_0.9fr] lg:py-32">
-          <div>
-            <span className="eyebrow">UAE-based commodity trading</span>
-            <h1 className="mt-5 font-display text-4xl font-bold leading-[1.08] text-white sm:text-5xl lg:text-6xl">{company.tagline}</h1>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-steel-400">{company.intro}</p>
-            <div className="mt-9 flex flex-wrap gap-4">
-              <Link to="/contact" className="btn-accent">Get in touch <ArrowRight size={16} /></Link>
-              <a href="#divisions" className="btn-ghost">Explore divisions</a>
-            </div>
-          </div>
-          <div className="hidden items-end lg:flex">
-            <div className="grid w-full grid-cols-2 gap-4">
-              {company.stats.map((s) => (
-                <div key={s.label} className="rounded-2xl border border-white/10 bg-navy-800 p-6">
-                  <div className="font-display text-3xl font-bold text-accent">{s.value}</div>
-                  <div className="mt-1 text-sm text-steel-400">{s.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
+    <section id="divisions" className="bg-navy-800">
+      <div className="container-x py-24">
+        <Reveal><span className="eyebrow">What we trade</span><h2 className="mt-4 font-display text-3xl font-bold text-white sm:text-4xl">Our divisions</h2></Reveal>
+        <div className="mt-12 grid gap-6 md:grid-cols-2">
+          {divisions.map((d, i) => (
+            <Reveal key={d.slug} delay={i * 0.08}><DivisionCard division={d} /></Reveal>
+          ))}
         </div>
-      </section>
+      </div>
+    </section>
+  )
+}
+```
 
-      {/* Intro / positioning */}
-      <section className="bg-paper">
-        <div className="container-x py-20">
-          <Reveal className="max-w-3xl">
-            <span className="eyebrow">Who we are</span>
-            <p className="mt-5 font-display text-2xl leading-snug text-ink-900 sm:text-3xl">{company.about.story}</p>
-          </Reveal>
+- [ ] **Step 5: Write `src/sections/WhyNTA.tsx`**
+
+```tsx
+import { company } from '../config/company'
+import Reveal from '../components/Reveal'
+
+export default function WhyNTA() {
+  return (
+    <section id="why" className="bg-navy-900">
+      <div className="container-x py-24">
+        <Reveal><span className="eyebrow">Why NTA Group</span><h2 className="mt-4 font-display text-3xl font-bold text-white sm:text-4xl">Built for dependable global trade</h2></Reveal>
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {company.capabilities.map((c, i) => (
+            <Reveal key={c.title} delay={i * 0.07}>
+              <div className="h-full rounded-2xl border border-white/10 bg-white/[0.04] p-7 backdrop-blur-md">
+                <div className="rule-gold" />
+                <h3 className="mt-4 font-display text-lg font-semibold text-white">{c.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-white/60">{c.body}</p>
+              </div>
+            </Reveal>
+          ))}
         </div>
-      </section>
-
-      {/* Divisions */}
-      <section id="divisions" className="bg-paper">
-        <div className="container-x pb-20">
-          <Reveal><h2 className="font-display text-3xl font-bold text-ink-900 sm:text-4xl">Our divisions</h2></Reveal>
-          <div className="mt-10 grid gap-6 md:grid-cols-2">
-            {divisions.map((d, i) => (
-              <Reveal key={d.slug} delay={i * 80}><DivisionCard division={d} /></Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <StatStrip />
-
-      {/* Capabilities */}
-      <section className="bg-paper">
-        <div className="container-x py-20">
-          <Reveal><span className="eyebrow">Why NTA Group</span><h2 className="mt-4 font-display text-3xl font-bold text-ink-900 sm:text-4xl">Built for dependable global trade</h2></Reveal>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {company.capabilities.map((c, i) => (
-              <Reveal key={c.title} delay={i * 80} className="rounded-2xl border border-ink-900/10 bg-white p-6">
-                <h3 className="font-display text-lg font-semibold text-ink-900">{c.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-ink-500">{c.body}</p>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <CTABand />
-    </>
+      </div>
+    </section>
   )
 }
 ```
@@ -765,215 +774,98 @@ Expected: PASS, no type errors.
 
 ```bash
 cd ~/ntagroup && git add -A
-git commit -m "feat: build Home page with division cards, stats, capabilities, CTA"
+git commit -m "feat: add About, Divisions, Why NTA sections + DivisionCard"
 ```
 
 ---
 
-### Task 5: About page
+### Task 7: Global Markets — WorldMap (SVG) + StatStrip + GlobalMarkets section
 
 **Files:**
-- Create: `src/pages/About.tsx`
-- Modify: `src/App.tsx` (add `/about` route)
+- Create: `src/components/WorldMap.tsx`, `src/components/StatStrip.tsx`, `src/sections/GlobalMarkets.tsx`
 
 **Interfaces:**
-- Consumes: `company`, `Reveal`, `CTABand`.
+- Consumes: `company` (markets, stats); `usePrefersReducedMotion`.
+- Produces: `<WorldMap />`, `<StatStrip />`, `<GlobalMarkets />` (`id="markets"`).
 
-- [ ] **Step 1: Write `src/pages/About.tsx`**
+**WorldMap spec (judgment work):**
+Inline `<svg viewBox="0 0 100 56" preserveAspectRatio="xMidYMid meet" className="w-full">` rendering a stylized "global network" — NOT an accurate continent map:
+- A faint graticule background: evenly spaced horizontal + vertical hairlines (stroke `white` at low opacity) drawn programmatically across the viewBox.
+- A pulsing **gold** node (small circle + an expanding/fading ring) at each `company.markets[i]` position (x,y are percentages → multiply x by 1.0 since viewBox width is 100; y percentage maps to viewBox height 56, i.e. `cy = m.y/100*56`). Treat the first market (Dubai) as the hub.
+- Animated gold arcs from the hub to every other market: quadratic-bezier paths with a control point lifted toward the top; animate a travelling highlight (stroke-dash offset) along each.
+- Under `usePrefersReducedMotion()`: draw nodes + arcs statically, no animation (no pulsing rings, no dash travel).
+- Use framer-motion or CSS/SMIL for the animation — your choice — but it must be reduced-motion aware. Keep it tasteful and subtle. Label each node with its market name in small text (white/70).
+
+- [ ] **Step 1: Write `src/components/WorldMap.tsx`** per the spec above.
+
+- [ ] **Step 2: Write `src/components/StatStrip.tsx`**
 
 ```tsx
 import { company } from '../config/company'
-import Reveal from '../components/Reveal'
-import CTABand from '../components/CTABand'
 
-export default function About() {
-  const { about } = company
+export default function StatStrip() {
   return (
-    <>
-      <section className="bg-navy-900">
-        <div className="container-x py-24">
-          <span className="eyebrow">About NTA Group</span>
-          <h1 className="mt-5 max-w-3xl font-display text-4xl font-bold leading-tight text-white sm:text-5xl">Strategy-led commodity trading, built on trust.</h1>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-steel-400">{about.story}</p>
+    <div className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 md:grid-cols-4">
+      {company.stats.map((s) => (
+        <div key={s.label} className="bg-navy-800 p-6">
+          <div className="font-display text-3xl font-bold tabular-nums text-gold">{s.value}</div>
+          <div className="mt-1 text-sm text-white/60">{s.label}</div>
         </div>
-      </section>
-
-      <section className="bg-paper">
-        <div className="container-x grid gap-10 py-20 md:grid-cols-2">
-          <Reveal className="rounded-2xl border border-ink-900/10 bg-white p-8">
-            <h2 className="font-display text-2xl font-bold text-ink-900">Our mission</h2>
-            <p className="mt-3 leading-relaxed text-ink-500">{about.mission}</p>
-          </Reveal>
-          <Reveal delay={80} className="rounded-2xl border border-ink-900/10 bg-white p-8">
-            <h2 className="font-display text-2xl font-bold text-ink-900">Our vision</h2>
-            <p className="mt-3 leading-relaxed text-ink-500">{about.vision}</p>
-          </Reveal>
-        </div>
-      </section>
-
-      <section className="bg-paper">
-        <div className="container-x pb-20">
-          <Reveal><h2 className="font-display text-3xl font-bold text-ink-900">Our values</h2></Reveal>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {about.values.map((v, i) => (
-              <Reveal key={v.title} delay={i * 80} className="border-t-2 border-accent pt-5">
-                <h3 className="font-display text-lg font-semibold text-ink-900">{v.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-ink-500">{v.body}</p>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-navy-900">
-        <div className="container-x grid gap-8 py-20 md:grid-cols-[0.8fr_1.2fr]">
-          <Reveal><h2 className="font-display text-3xl font-bold text-white">Why the UAE</h2></Reveal>
-          <Reveal delay={80}><p className="text-lg leading-relaxed text-steel-400">{about.whyUae}</p></Reveal>
-        </div>
-      </section>
-
-      <CTABand title="Partner with NTA Group" body="Reliable sourcing and offtake across energy and agri-commodities." />
-    </>
+      ))}
+    </div>
   )
 }
 ```
 
-- [ ] **Step 2: Add `/about` route in `src/App.tsx`**
+- [ ] **Step 3: Write `src/sections/GlobalMarkets.tsx`**
 
 ```tsx
-import About from './pages/About'
-// inside <Route element={<Layout />}> add:
-<Route path="/about" element={<About />} />
-```
-
-- [ ] **Step 3: Verify build**
-
-Run: `cd ~/ntagroup && npm run build`
-Expected: PASS, no type errors.
-
-- [ ] **Step 4: Commit**
-
-```bash
-cd ~/ntagroup && git add -A
-git commit -m "feat: add About page"
-```
-
----
-
-### Task 6: Data-driven Division page + 4 routes
-
-**Files:**
-- Create: `src/pages/DivisionPage.tsx`
-- Modify: `src/App.tsx` (add 4 division routes)
-
-**Interfaces:**
-- Consumes: `getDivisionBySlug` from config; `useParams`, `Navigate` from router; `Reveal`, `CTABand`, `Icon`.
-- One component renders any division by `:slug` route param; unknown slug redirects to `/`.
-
-- [ ] **Step 1: Write `src/pages/DivisionPage.tsx`**
-
-```tsx
-import { useParams, Navigate, Link } from 'react-router-dom'
-import { Check, ArrowRight } from 'lucide-react'
-import { getDivisionBySlug } from '../config/company'
 import Reveal from '../components/Reveal'
-import CTABand from '../components/CTABand'
-import Icon from '../components/Icon'
+import WorldMap from '../components/WorldMap'
+import StatStrip from '../components/StatStrip'
 
-export default function DivisionPage() {
-  const { slug = '' } = useParams()
-  const division = getDivisionBySlug(slug)
-  if (!division) return <Navigate to="/" replace />
-
+export default function GlobalMarkets() {
   return (
-    <>
-      <section className="bg-navy-900">
-        <div className="container-x py-24">
-          <Link to="/#divisions" className="text-sm text-steel-400 transition-colors hover:text-white">← All divisions</Link>
-          <span className="mt-6 flex h-14 w-14 items-center justify-center rounded-xl bg-accent text-white"><Icon name={division.icon} size={26} /></span>
-          <h1 className="mt-6 max-w-3xl font-display text-4xl font-bold leading-tight text-white sm:text-5xl">{division.title}</h1>
-          <p className="mt-4 text-lg text-accent-soft">{division.tagline}</p>
-        </div>
-      </section>
-
-      <section className="bg-paper">
-        <div className="container-x grid gap-12 py-20 lg:grid-cols-[1.3fr_0.7fr]">
-          <Reveal>
-            <h2 className="font-display text-2xl font-bold text-ink-900">Overview</h2>
-            <p className="mt-4 text-lg leading-relaxed text-ink-500">{division.overview}</p>
-          </Reveal>
-          <Reveal delay={80} className="rounded-2xl border border-ink-900/10 bg-white p-7">
-            <h3 className="font-display text-lg font-semibold text-ink-900">What we trade</h3>
-            <ul className="mt-4 space-y-3">
-              {division.trades.map((t) => (
-                <li key={t} className="flex items-start gap-2 text-sm text-ink-500"><Check size={16} className="mt-0.5 shrink-0 text-accent" />{t}</li>
-              ))}
-            </ul>
-          </Reveal>
-        </div>
-      </section>
-
-      <section className="bg-paper">
-        <div className="container-x pb-20">
-          <Reveal><h2 className="font-display text-3xl font-bold text-ink-900">How we operate</h2></Reveal>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {division.operations.map((o, i) => (
-              <Reveal key={o.title} delay={i * 80} className="rounded-2xl border border-ink-900/10 bg-white p-6">
-                <h3 className="font-display text-lg font-semibold text-ink-900">{o.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-ink-500">{o.body}</p>
-              </Reveal>
-            ))}
-          </div>
-          <Reveal className="mt-12">
-            <Link to="/contact" className="btn-accent">Enquire about this division <ArrowRight size={16} /></Link>
-          </Reveal>
-        </div>
-      </section>
-
-      <CTABand />
-    </>
+    <section id="markets" className="bg-navy-800">
+      <div className="container-x py-24">
+        <Reveal><span className="eyebrow">Global reach</span><h2 className="mt-4 font-display text-3xl font-bold text-white sm:text-4xl">Trading across the world’s key markets</h2></Reveal>
+        <Reveal delay={0.1} className="mt-10 rounded-2xl border border-white/10 bg-navy-900 p-4 sm:p-8"><WorldMap /></Reveal>
+        <Reveal delay={0.15} className="mt-8"><StatStrip /></Reveal>
+      </div>
+    </section>
   )
 }
 ```
 
-- [ ] **Step 2: Add division routes in `src/App.tsx`**
-
-```tsx
-import DivisionPage from './pages/DivisionPage'
-// inside <Route element={<Layout />}> add:
-<Route path="/divisions/:slug" element={<DivisionPage />} />
-```
-
-- [ ] **Step 3: Verify build**
+- [ ] **Step 4: Verify build**
 
 Run: `cd ~/ntagroup && npm run build`
 Expected: PASS, no type errors.
 
-- [ ] **Step 4: Manually verify all four division URLs resolve**
+- [ ] **Step 5: Manual check**
 
-Run: `cd ~/ntagroup && npm run dev` then visit `/divisions/grains`, `/divisions/lng`, `/divisions/refined-oil`, `/divisions/crude-oil` and confirm distinct titles render; `/divisions/bogus` redirects to `/`.
-Expected: 4 distinct pages, bad slug redirects home. Stop dev server after.
+Run: `cd ~/ntagroup && npm run dev`, load `/#markets`, confirm map renders with nodes/labels/arcs and the stat strip shows figures. Stop dev server.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
 cd ~/ntagroup && git add -A
-git commit -m "feat: add data-driven division detail page with 4 routes"
+git commit -m "feat: add Global Markets section with SVG world map and stat strip"
 ```
 
 ---
 
-### Task 7: Contact page + UI-only form (with validation tests)
+### Task 8: Sustainability + Contact (form + validation) + CTABand
 
 **Files:**
-- Create: `src/lib/validateContact.ts`, `src/lib/validateContact.test.ts`, `src/components/ContactForm.tsx`, `src/pages/Contact.tsx`
-- Modify: `src/App.tsx` (add `/contact` route)
+- Create: `src/lib/validateContact.ts`, `src/lib/validateContact.test.ts`, `src/components/ContactForm.tsx`, `src/components/CTABand.tsx`, `src/sections/Sustainability.tsx`, `src/sections/ContactSection.tsx`
 
 **Interfaces:**
+- Consumes: `company`, `divisions`; `Reveal`.
 - Produces:
-  - `type ContactValues = { name: string; company: string; email: string; division: string; message: string }`
-  - `validateContact(v: ContactValues): Partial<Record<keyof ContactValues, string>>` — returns a map of field → error message; empty object means valid.
-  - `<ContactForm />` — controlled form, validates on submit, shows success state, no network call.
+  - `type ContactValues = { name; company; email; division; message }`
+  - `validateContact(v): Partial<Record<keyof ContactValues, string>>` (empty = valid)
+  - `<ContactForm />`, `<CTABand />`, `<Sustainability />` (`id="sustainability"`), `<ContactSection />` (`id="contact"`).
 
 - [ ] **Step 1: Write the failing test** — `src/lib/validateContact.test.ts`
 
@@ -984,22 +876,14 @@ import { validateContact } from './validateContact'
 const base = { name: 'A', company: 'B', email: 'a@b.com', division: 'grains', message: 'Hello there' }
 
 describe('validateContact', () => {
-  it('returns no errors for valid input', () => {
-    expect(validateContact(base)).toEqual({})
-  })
-  it('flags a missing name', () => {
-    expect(validateContact({ ...base, name: '' }).name).toBeTruthy()
-  })
-  it('flags an invalid email', () => {
-    expect(validateContact({ ...base, email: 'not-an-email' }).email).toBeTruthy()
-  })
-  it('flags a too-short message', () => {
-    expect(validateContact({ ...base, message: 'hi' }).message).toBeTruthy()
-  })
+  it('returns no errors for valid input', () => { expect(validateContact(base)).toEqual({}) })
+  it('flags a missing name', () => { expect(validateContact({ ...base, name: '' }).name).toBeTruthy() })
+  it('flags an invalid email', () => { expect(validateContact({ ...base, email: 'nope' }).email).toBeTruthy() })
+  it('flags a too-short message', () => { expect(validateContact({ ...base, message: 'hi' }).message).toBeTruthy() })
 })
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [ ] **Step 2: Run test — verify it fails**
 
 Run: `cd ~/ntagroup && npx vitest run src/lib/validateContact.test.ts`
 Expected: FAIL — cannot resolve `./validateContact`.
@@ -1019,7 +903,7 @@ export function validateContact(v: ContactValues): Partial<Record<keyof ContactV
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [ ] **Step 4: Run test — verify it passes**
 
 Run: `cd ~/ntagroup && npx vitest run src/lib/validateContact.test.ts`
 Expected: PASS (4 tests).
@@ -1042,7 +926,6 @@ export default function ContactForm() {
   function update<K extends keyof ContactValues>(key: K, val: string) {
     setValues((v) => ({ ...v, [key]: val }))
   }
-
   function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     const errs = validateContact(values)
@@ -1052,21 +935,21 @@ export default function ContactForm() {
 
   if (sent) {
     return (
-      <div className="flex flex-col items-start gap-3 rounded-2xl border border-accent/30 bg-white p-8">
-        <CheckCircle2 className="text-accent" />
-        <h3 className="font-display text-xl font-semibold text-ink-900">Thanks — we’ll be in touch.</h3>
-        <p className="text-sm text-ink-500">Your enquiry has been received. A member of our team will respond shortly.</p>
-        <button onClick={() => setSent(false)} className="mt-2 text-sm font-medium text-accent">Send another message</button>
+      <div className="flex flex-col items-start gap-3 rounded-2xl border border-gold/30 bg-white/[0.04] p-8 backdrop-blur-md">
+        <CheckCircle2 className="text-gold" />
+        <h3 className="font-display text-xl font-semibold text-white">Thank you — we’ll be in touch.</h3>
+        <p className="text-sm text-white/60">Your enquiry has been received. A member of our trading team will respond shortly.</p>
+        <button onClick={() => setSent(false)} className="mt-2 text-sm font-medium text-gold">Send another message</button>
       </div>
     )
   }
 
-  const field = 'w-full rounded-lg border border-ink-900/15 bg-white px-4 py-3 text-sm text-ink-900 outline-none transition-colors focus:border-accent'
-  const label = 'mb-1.5 block text-sm font-medium text-ink-900'
-  const err = 'mt-1 text-xs text-red-600'
+  const field = 'w-full rounded-lg border border-white/15 bg-navy-900/60 px-4 py-3 text-sm text-white outline-none transition-colors placeholder:text-white/30 focus:border-gold'
+  const label = 'mb-1.5 block text-sm font-medium text-white/80'
+  const err = 'mt-1 text-xs text-red-400'
 
   return (
-    <form onSubmit={onSubmit} noValidate className="rounded-2xl border border-ink-900/10 bg-white p-8">
+    <form onSubmit={onSubmit} noValidate className="rounded-2xl border border-white/10 bg-white/[0.04] p-8 backdrop-blur-md">
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <label htmlFor="name" className={label}>Name</label>
@@ -1097,84 +980,209 @@ export default function ContactForm() {
         <textarea id="message" rows={5} className={field} value={values.message} onChange={(e) => update('message', e.target.value)} />
         {errors.message && <p className={err}>{errors.message}</p>}
       </div>
-      <button type="submit" className="btn-accent mt-6">Send enquiry <Send size={16} /></button>
+      <button type="submit" className="btn-gold mt-6">Send enquiry <Send size={16} /></button>
     </form>
   )
 }
 ```
 
-- [ ] **Step 6: Write `src/pages/Contact.tsx`**
+- [ ] **Step 6: Write `src/components/CTABand.tsx`**
+
+```tsx
+import { ArrowRight } from 'lucide-react'
+
+export default function CTABand({ title = 'Let’s trade.', body = 'Talk to our team about your sourcing or offtake requirements.' }: { title?: string; body?: string }) {
+  return (
+    <section className="bg-gold">
+      <div className="container-x flex flex-col items-start gap-6 py-16 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h2 className="font-display text-3xl font-bold text-navy-900">{title}</h2>
+          <p className="mt-2 max-w-md text-navy-900/80">{body}</p>
+        </div>
+        <a href="/#contact" className="inline-flex items-center gap-2 rounded-full bg-navy-900 px-7 py-3.5 text-sm font-medium text-white transition-colors hover:bg-navy-800">Contact us <ArrowRight size={16} /></a>
+      </div>
+    </section>
+  )
+}
+```
+
+- [ ] **Step 7: Write `src/sections/Sustainability.tsx`**
+
+```tsx
+import { company } from '../config/company'
+import Reveal from '../components/Reveal'
+
+export default function Sustainability() {
+  return (
+    <section id="sustainability" className="bg-navy-900">
+      <div className="container-x py-24">
+        <Reveal><span className="eyebrow">Responsibility</span><h2 className="mt-4 font-display text-3xl font-bold text-white sm:text-4xl">Trading responsibly, for the long term</h2></Reveal>
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {company.sustainability.map((s, i) => (
+            <Reveal key={s.title} delay={i * 0.07}>
+              <div className="h-full rounded-2xl border border-white/10 bg-white/[0.04] p-7 backdrop-blur-md">
+                <h3 className="font-display text-lg font-semibold text-white">{s.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-white/60">{s.body}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+```
+
+- [ ] **Step 8: Write `src/sections/ContactSection.tsx`**
 
 ```tsx
 import { Mail, Phone, MapPin, Clock } from 'lucide-react'
 import { company } from '../config/company'
+import Reveal from '../components/Reveal'
 import ContactForm from '../components/ContactForm'
 
-export default function Contact() {
+export default function ContactSection() {
   const { contact } = company
   return (
-    <>
-      <section className="bg-navy-900">
-        <div className="container-x py-20">
-          <span className="eyebrow">Contact</span>
-          <h1 className="mt-5 font-display text-4xl font-bold text-white sm:text-5xl">Let’s talk trade.</h1>
-          <p className="mt-4 max-w-xl text-lg text-steel-400">Tell us about your sourcing or offtake requirements and our team will get back to you.</p>
-        </div>
-      </section>
-
-      <section className="bg-paper">
-        <div className="container-x grid gap-10 py-20 lg:grid-cols-[1.3fr_0.7fr]">
-          <ContactForm />
-          <div className="space-y-6">
-            <div className="rounded-2xl border border-ink-900/10 bg-white p-7">
-              <ul className="space-y-4 text-sm text-ink-500">
-                <li className="flex gap-3"><MapPin size={18} className="mt-0.5 shrink-0 text-accent" /><span>{contact.addressLines.join(', ')}</span></li>
-                <li className="flex gap-3"><Phone size={18} className="shrink-0 text-accent" />{contact.phone}</li>
-                <li className="flex gap-3"><Mail size={18} className="shrink-0 text-accent" />{contact.email}</li>
-                <li className="flex gap-3"><Clock size={18} className="shrink-0 text-accent" />{contact.hours}</li>
+    <section id="contact" className="bg-navy-800">
+      <div className="container-x py-24">
+        <Reveal><span className="eyebrow">Contact</span><h2 className="mt-4 font-display text-3xl font-bold text-white sm:text-4xl">Let’s talk trade.</h2><p className="mt-4 max-w-xl text-lg text-white/60">Tell us about your sourcing or offtake requirements and our trading team will respond.</p></Reveal>
+        <div className="mt-12 grid gap-10 lg:grid-cols-[1.3fr_0.7fr]">
+          <Reveal><ContactForm /></Reveal>
+          <Reveal delay={0.1}>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-7 backdrop-blur-md">
+              <ul className="space-y-4 text-sm text-white/70">
+                <li className="flex gap-3"><MapPin size={18} className="mt-0.5 shrink-0 text-gold" /><span>{contact.addressLines.join(', ')}</span></li>
+                <li className="flex gap-3"><Phone size={18} className="shrink-0 text-gold" />{contact.phone}</li>
+                <li className="flex gap-3"><Mail size={18} className="shrink-0 text-gold" />{contact.email}</li>
+                <li className="flex gap-3"><Clock size={18} className="shrink-0 text-gold" />{contact.hours}</li>
               </ul>
             </div>
-            <div className="flex h-56 items-center justify-center rounded-2xl border border-ink-900/10 bg-navy-800 text-sm text-steel-400">Map placeholder — Dubai, UAE</div>
-          </div>
+          </Reveal>
         </div>
-      </section>
+      </div>
+    </section>
+  )
+}
+```
+
+- [ ] **Step 9: Verify build + tests**
+
+Run: `cd ~/ntagroup && npm test && npm run build`
+Expected: all tests PASS; build PASS, no type errors.
+
+- [ ] **Step 10: Commit**
+
+```bash
+cd ~/ntagroup && git add -A
+git commit -m "feat: add Sustainability, Contact form section, CTABand with validation tests"
+```
+
+---
+
+### Task 9: Compose Landing, Division page, NotFound + final routing & verification
+
+**Files:**
+- Create: `src/pages/Landing.tsx`, `src/pages/DivisionPage.tsx`, `src/pages/NotFound.tsx`
+- Modify: `src/App.tsx`
+- Delete: `src/pages/Home.tsx` (replaced by Landing)
+
+**Interfaces:**
+- Consumes: all section components; `getDivisionBySlug`; `Reveal`, `CTABand`, `Icon`.
+
+- [ ] **Step 1: Write `src/pages/Landing.tsx`**
+
+```tsx
+import Hero from '../components/Hero'
+import About from '../sections/About'
+import Divisions from '../sections/Divisions'
+import WhyNTA from '../sections/WhyNTA'
+import GlobalMarkets from '../sections/GlobalMarkets'
+import Sustainability from '../sections/Sustainability'
+import ContactSection from '../sections/ContactSection'
+
+export default function Landing() {
+  return (
+    <>
+      <Hero />
+      <About />
+      <Divisions />
+      <WhyNTA />
+      <GlobalMarkets />
+      <Sustainability />
+      <ContactSection />
     </>
   )
 }
 ```
 
-- [ ] **Step 7: Add `/contact` route in `src/App.tsx`**
+- [ ] **Step 2: Write `src/pages/DivisionPage.tsx`**
 
 ```tsx
-import Contact from './pages/Contact'
-// inside <Route element={<Layout />}> add:
-<Route path="/contact" element={<Contact />} />
+import { useParams, Navigate, Link } from 'react-router-dom'
+import { Check, ArrowRight } from 'lucide-react'
+import { getDivisionBySlug } from '../config/company'
+import Reveal from '../components/Reveal'
+import CTABand from '../components/CTABand'
+import Icon from '../components/Icon'
+
+export default function DivisionPage() {
+  const { slug = '' } = useParams()
+  const division = getDivisionBySlug(slug)
+  if (!division) return <Navigate to="/" replace />
+
+  return (
+    <>
+      <section className="bg-navy-900 pt-28">
+        <div className="container-x py-16">
+          <Link to="/#divisions" className="text-sm text-white/60 transition-colors hover:text-white">← All divisions</Link>
+          <span className="mt-6 flex h-14 w-14 items-center justify-center rounded-xl bg-gold/15 text-gold"><Icon name={division.icon} size={26} /></span>
+          <h1 className="mt-6 max-w-3xl font-display text-4xl font-bold leading-tight text-white sm:text-5xl">{division.title}</h1>
+          <p className="mt-4 text-lg text-gold-soft">{division.tagline}</p>
+        </div>
+      </section>
+
+      <section className="bg-navy-800">
+        <div className="container-x grid gap-12 py-20 lg:grid-cols-[1.3fr_0.7fr]">
+          <Reveal>
+            <h2 className="font-display text-2xl font-bold text-white">Overview</h2>
+            <p className="mt-4 text-lg leading-relaxed text-white/70">{division.overview}</p>
+          </Reveal>
+          <Reveal delay={0.1} className="rounded-2xl border border-white/10 bg-white/[0.04] p-7 backdrop-blur-md">
+            <h3 className="font-display text-lg font-semibold text-white">What we trade</h3>
+            <ul className="mt-4 space-y-3">
+              {division.trades.map((t) => (
+                <li key={t} className="flex items-start gap-2 text-sm text-white/70"><Check size={16} className="mt-0.5 shrink-0 text-gold" />{t}</li>
+              ))}
+            </ul>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="bg-navy-900">
+        <div className="container-x py-20">
+          <Reveal><h2 className="font-display text-3xl font-bold text-white">Our services</h2></Reveal>
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {division.services.map((s, i) => (
+              <Reveal key={s} delay={i * 0.07}>
+                <div className="h-full rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-md">
+                  <div className="rule-gold" />
+                  <p className="mt-3 text-sm font-medium text-white">{s}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+          <Reveal className="mt-12"><a href="/#contact" className="btn-gold">Enquire about this division <ArrowRight size={16} /></a></Reveal>
+        </div>
+      </section>
+
+      <CTABand />
+    </>
+  )
+}
 ```
 
-- [ ] **Step 8: Verify build and tests**
-
-Run: `cd ~/ntagroup && npm test && npm run build`
-Expected: all tests PASS; build PASS, no type errors.
-
-- [ ] **Step 9: Commit**
-
-```bash
-cd ~/ntagroup && git add -A
-git commit -m "feat: add Contact page with UI-only validated form"
-```
-
----
-
-### Task 8: NotFound page + final wiring & full verification
-
-**Files:**
-- Create: `src/pages/NotFound.tsx`
-- Modify: `src/App.tsx` (catch-all route)
-
-**Interfaces:**
-- Consumes: router `Link`.
-
-- [ ] **Step 1: Write `src/pages/NotFound.tsx`**
+- [ ] **Step 3: Write `src/pages/NotFound.tsx`**
 
 ```tsx
 import { Link } from 'react-router-dom'
@@ -1182,26 +1190,24 @@ import { Link } from 'react-router-dom'
 export default function NotFound() {
   return (
     <section className="bg-navy-900">
-      <div className="container-x flex min-h-[60vh] flex-col items-start justify-center py-24">
-        <span className="font-display text-6xl font-bold text-accent">404</span>
+      <div className="container-x flex min-h-[70vh] flex-col items-start justify-center py-24">
+        <span className="font-display text-6xl font-bold text-gold">404</span>
         <h1 className="mt-4 font-display text-3xl font-bold text-white">Page not found</h1>
-        <p className="mt-3 text-steel-400">The page you’re looking for doesn’t exist.</p>
-        <Link to="/" className="btn-accent mt-8">Back to home</Link>
+        <p className="mt-3 text-white/60">The page you’re looking for doesn’t exist.</p>
+        <Link to="/" className="btn-gold mt-8">Back to home</Link>
       </div>
     </section>
   )
 }
 ```
 
-- [ ] **Step 2: Finalise `src/App.tsx` with all routes + catch-all**
+- [ ] **Step 4: Finalise `src/App.tsx` and remove the placeholder Home**
 
 ```tsx
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
-import Home from './pages/Home'
-import About from './pages/About'
+import Landing from './pages/Landing'
 import DivisionPage from './pages/DivisionPage'
-import Contact from './pages/Contact'
 import NotFound from './pages/NotFound'
 
 export default function App() {
@@ -1209,10 +1215,8 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
+          <Route path="/" element={<Landing />} />
           <Route path="/divisions/:slug" element={<DivisionPage />} />
-          <Route path="/contact" element={<Contact />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
@@ -1221,27 +1225,31 @@ export default function App() {
 }
 ```
 
-- [ ] **Step 3: Full verification**
+Then delete `src/pages/Home.tsx` (`git rm src/pages/Home.tsx`).
+
+- [ ] **Step 5: Full verification**
 
 Run: `cd ~/ntagroup && npm test && npm run build`
 Expected: all tests PASS; production build PASS, no type errors.
 
-- [ ] **Step 4: Manual smoke test**
+- [ ] **Step 6: Manual smoke test**
 
-Run: `cd ~/ntagroup && npm run dev` and check: Home, About, all 4 division pages, Contact (submit empty → errors; submit valid → success state), a bad URL → 404, mobile menu opens/closes, footer links work. Stop dev server after.
-Expected: all routes work, no console errors.
+Run: `cd ~/ntagroup && npm run dev` and check: landing renders all sections in order; header anchor links smooth-scroll; Divisions dropdown → each of the 4 division pages renders distinct content; `/#contact` deep-link scrolls; contact form (empty → errors; valid → success); a bad URL → 404; mobile menu; footer links. Stop dev server.
+Expected: all routes/sections work, no console errors.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
 cd ~/ntagroup && git add -A
-git commit -m "feat: add 404 page and finalise routing"
+git commit -m "feat: compose landing page, division pages, 404 and finalise routing"
 ```
 
 ---
 
 ## Notes for the implementer
 
-- Vite SPA routing: `npm run dev` and `npm run preview` handle deep links automatically; production hosting will need an SPA rewrite (all paths → `index.html`) — out of scope for this plan, relevant only at deploy time.
-- Keep ALL company strings in `src/config/company.ts`. If a component needs new copy, add it to the config, not the component.
-- Imagery is intentionally placeholder (gradient/duotone blocks). Swapping in real photos is a later pass.
+- SPA deep links work under `npm run dev`/`preview`; production hosting needs an SPA rewrite (all paths → index.html) — out of scope, relevant at deploy time only.
+- Keep ALL company strings in `src/config/company.ts`.
+- Stock video/image URLs are placeholders; if a given URL 404s, swap for any equivalent free industrial clip/photo and note it — do not block on a specific asset.
+- HeroCanvas and WorldMap are the two judgment-heavy components: implement them faithfully to their specs; favour subtlety and reduced-motion correctness over visual complexity.
+```
