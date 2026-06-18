@@ -1,4 +1,4 @@
-import { sustainability } from '../config/company'
+import { sustainability } from '../config/site'
 import { Leaf, Scale, Route, Handshake } from 'lucide-react'
 import SectionHeading from '../components/SectionHeading'
 import Reveal from '../components/Reveal'
@@ -23,7 +23,7 @@ export default function Sustainability() {
           {sustainability.pillars.map((p, i) => {
             const Icon = icons[i % icons.length]
             return (
-              <Reveal key={p.title} delay={i * 90}>
+              <Reveal key={p.title} delay={i * 0.09}>
                 <div className="glass flex h-full flex-col rounded-2xl p-6">
                   <div className="mb-4 grid h-11 w-11 place-items-center rounded-xl border border-[#d4af37]/30 bg-[#0a1622]/60 text-[#d4af37]">
                     <Icon className="h-5 w-5" />

@@ -4,7 +4,7 @@ import { describe, it, expect } from 'vitest'
 import Landing from '../pages/Landing'
 import DivisionPage from '../pages/DivisionPage'
 import Layout from '../components/Layout'
-import { divisions, divisionBySlug } from '../config/company'
+import { divisions, divisionBySlug } from '../config/site'
 
 describe('NTA Group site', () => {
   it('renders the hero headline on the landing page', () => {

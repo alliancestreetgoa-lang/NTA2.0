@@ -1,6 +1,6 @@
 import { useParams, Link, Navigate } from 'react-router-dom'
 import { ArrowLeft, Check } from 'lucide-react'
-import { divisionBySlug } from '../config/company'
+import { divisionBySlug } from '../config/site'
 import Reveal from '../components/Reveal'
 import CTABand from '../components/CTABand'
 
@@ -28,13 +28,13 @@ export default function DivisionPage() {
               All divisions
             </Link>
           </Reveal>
-          <Reveal delay={60} className="mt-8 flex items-center gap-4">
+          <Reveal delay={0.06} className="mt-8 flex items-center gap-4">
             <div className="grid h-14 w-14 place-items-center rounded-2xl border border-[#d4af37]/30 bg-[#13283f] text-[#d4af37]">
               <Icon className="h-7 w-7" />
             </div>
             <p className="eyebrow">{division.tagline}</p>
           </Reveal>
-          <Reveal delay={120}>
+          <Reveal delay={0.12}>
             <h1 className="mt-5 max-w-3xl font-display text-3xl font-bold leading-tight tracking-tight text-balance text-white sm:text-5xl">
               {division.name}
             </h1>
@@ -51,7 +51,7 @@ export default function DivisionPage() {
           <Reveal>
             <DetailList title={division.tradeLabel} items={division.trade} />
           </Reveal>
-          <Reveal delay={100}>
+          <Reveal delay={0.1}>
             <DetailList title={division.operateLabel} items={division.operate} />
           </Reveal>
         </div>

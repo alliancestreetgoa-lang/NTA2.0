@@ -1,4 +1,4 @@
-import { whyChoose } from '../config/company'
+import { whyChoose } from '../config/site'
 import { Network, LineChart, Truck, ShieldCheck, Handshake } from 'lucide-react'
 import SectionHeading from '../components/SectionHeading'
 import Reveal from '../components/Reveal'
@@ -17,7 +17,7 @@ export default function WhyNTA() {
           {whyChoose.map((item, i) => {
             const Icon = icons[i % icons.length]
             return (
-              <Reveal key={item.title} delay={i * 80}>
+              <Reveal key={item.title} delay={i * 0.08}>
                 <div className="flex h-full gap-4 rounded-2xl border border-white/8 bg-[#13283f] p-6">
                   <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-[#d4af37]/30 bg-[#0a1622] text-[#d4af37]">
                     <Icon className="h-5 w-5" />

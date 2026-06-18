@@ -1,4 +1,4 @@
-import { divisions } from '../config/company'
+import { divisions } from '../config/site'
 import SectionHeading from '../components/SectionHeading'
 import DivisionCard from '../components/DivisionCard'
 import Reveal from '../components/Reveal'
@@ -14,7 +14,7 @@ export default function Divisions() {
         />
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {divisions.map((d, i) => (
-            <Reveal key={d.slug} delay={i * 90}>
+            <Reveal key={d.slug} delay={i * 0.09}>
               <DivisionCard division={d} />
             </Reveal>
           ))}

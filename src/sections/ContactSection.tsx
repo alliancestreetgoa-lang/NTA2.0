@@ -1,5 +1,5 @@
 import { Mail, Globe, MapPin, Clock } from 'lucide-react'
-import { company } from '../config/company'
+import { company } from '../config/site'
 import SectionHeading from '../components/SectionHeading'
 import ContactForm from '../components/ContactForm'
 import Reveal from '../components/Reveal'
@@ -32,7 +32,7 @@ export default function ContactSection() {
           </Reveal>
         </div>
 
-        <Reveal delay={120}>
+        <Reveal delay={0.12}>
           <ContactForm />
         </Reveal>
       </div>

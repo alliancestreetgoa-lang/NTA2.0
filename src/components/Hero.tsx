@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { ArrowRight, ChevronDown } from 'lucide-react'
-import { hero } from '../config/company'
+import { hero } from '../config/site'
 import { useReducedMotion } from '../hooks/useReducedMotion'
 import HeroCanvas from './HeroCanvas'
 

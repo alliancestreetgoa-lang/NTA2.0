@@ -1,4 +1,4 @@
-import { markets } from '../config/company'
+import { markets } from '../config/site'
 import SectionHeading from '../components/SectionHeading'
 import StatStrip from '../components/StatStrip'
 import WorldMap from '../components/WorldMap'

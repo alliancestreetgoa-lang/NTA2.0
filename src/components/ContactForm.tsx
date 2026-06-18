@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Check, Send } from 'lucide-react'
-import { divisions } from '../config/company'
+import { divisions } from '../config/site'
 
 interface Errors {
   name?: string

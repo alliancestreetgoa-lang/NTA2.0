@@ -1,24 +1,20 @@
-import { markets } from '../config/company'
+import { markets } from '../config/site'
 
 /**
- * Lightweight world map on an equirectangular projection. The base is a
- * stylized dotted-graticule rectangle (not a true coastline — kept dependency-free);
- * gold nodes mark the markets NTA serves, with animated trade arcs from the UAE hub.
+ * Lightweight world map. The base is a stylized dotted graticule (dependency-free,
+ * not a true coastline); gold nodes mark the markets NTA serves, positioned by
+ * percentage coordinates from config, with animated trade arcs from the UAE hub.
  */
 
 const W = 1000
 const H = 500
 
-// Equirectangular projection: lon [-180,180] -> x, lat [90,-90] -> y
-function project(lon: number, lat: number) {
-  const x = ((lon + 180) / 360) * W
-  const y = ((90 - lat) / 180) * H
-  return { x, y }
-}
+// Markets carry x/y as percentages (0–100) of the map rectangle.
+const toPx = (x: number, y: number) => ({ x: (x / 100) * W, y: (y / 100) * H })
 
 export default function WorldMap() {
   const hub = markets.find((m) => m.hub) ?? markets[0]
-  const hubPt = project(hub.lon, hub.lat)
+  const hubPt = toPx(hub.x, hub.y)
 
   return (
     <svg
@@ -47,7 +43,6 @@ export default function WorldMap() {
           Array.from({ length: 12 }).map((_, row) => {
             const x = (col / 23) * W
             const y = (row / 11) * H
-            // taper density near poles for a subtle map feel
             const r = 1.3 - Math.abs(row - 5.5) * 0.06
             return <circle key={`${col}-${row}`} cx={x} cy={y} r={Math.max(0.5, r)} />
           }),
@@ -59,24 +54,23 @@ export default function WorldMap() {
         {markets
           .filter((m) => !m.hub)
           .map((m) => {
-            const p = project(m.lon, m.lat)
+            const p = toPx(m.x, m.y)
             const mx = (hubPt.x + p.x) / 2
             const my = (hubPt.y + p.y) / 2 - Math.abs(hubPt.x - p.x) * 0.18 - 30
-            return (
-              <path
-                key={m.name}
-                d={`M ${hubPt.x} ${hubPt.y} Q ${mx} ${my} ${p.x} ${p.y}`}
-              />
-            )
+            return <path key={m.name} d={`M ${hubPt.x} ${hubPt.y} Q ${mx} ${my} ${p.x} ${p.y}`} />
           })}
       </g>
 
       {/* Market nodes */}
       <g>
         {markets.map((m) => {
-          const p = project(m.lon, m.lat)
+          const p = toPx(m.x, m.y)
           return (
-            <g key={m.name} className="animate-pulse-node" style={{ transformOrigin: `${p.x}px ${p.y}px` }}>
+            <g
+              key={m.name}
+              className="animate-pulse-node"
+              style={{ transformOrigin: `${p.x}px ${p.y}px` }}
+            >
               <circle cx={p.x} cy={p.y} r={m.hub ? 9 : 6} fill="#d4af37" opacity="0.18" />
               <circle cx={p.x} cy={p.y} r={m.hub ? 4 : 3} fill={m.hub ? '#e0c074' : '#d4af37'} />
             </g>

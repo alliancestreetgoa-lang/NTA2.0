@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Menu, X, ChevronDown, ArrowRight } from 'lucide-react'
-import { nav, divisions, company } from '../config/company'
+import { nav, divisions, company } from '../config/site'
 import { useScrolled } from '../hooks/useScrolled'
 
 function Logo() {

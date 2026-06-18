@@ -1,4 +1,4 @@
-import { stats } from '../config/company'
+import { stats } from '../config/site'
 import Reveal from './Reveal'
 
 export default function StatStrip() {
@@ -7,7 +7,7 @@ export default function StatStrip() {
       {stats.map((s, i) => (
         <Reveal
           key={s.label}
-          delay={i * 90}
+          delay={i * 0.09}
           className="bg-[#0b1f3a] px-6 py-8 text-center"
         >
           <div className="font-display text-3xl font-bold tabular-nums text-[#d4af37] sm:text-4xl">

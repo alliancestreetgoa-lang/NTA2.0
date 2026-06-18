@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Mail, Globe, MapPin } from 'lucide-react'
-import { company, divisions, industries } from '../config/company'
+import { company, divisions, industries } from '../config/site'
 
 export default function Footer() {
   return (

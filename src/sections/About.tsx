@@ -1,4 +1,4 @@
-import { about } from '../config/company'
+import { about } from '../config/site'
 import Reveal from '../components/Reveal'
 
 export default function About() {
@@ -15,7 +15,7 @@ export default function About() {
         </div>
         <div className="space-y-5">
           {about.paragraphs.map((p, i) => (
-            <Reveal key={i} delay={i * 90}>
+            <Reveal key={i} delay={i * 0.09}>
               <p className="text-base leading-relaxed text-[#aab4c0]">{p}</p>
             </Reveal>
           ))}

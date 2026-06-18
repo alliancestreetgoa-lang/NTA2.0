@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
-import type { Division } from '../config/company'
+import type { Division } from '../config/site'
 
 export default function DivisionCard({ division }: { division: Division }) {
   const Icon = division.icon
