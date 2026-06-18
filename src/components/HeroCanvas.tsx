@@ -162,16 +162,16 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
     world.add(atmosphere, atmoHalo)
 
     // Trade hubs + arcs (gold, on top of the Earth)
-    const hub = { lat: 25.2, lon: 55.3 } // Dubai
+    const hub = { name: 'Dubai', lat: 25.2, lon: 55.3 }
     const spokes = [
-      { lat: 51.9, lon: 4.5 },
-      { lat: 1.3, lon: 103.8 },
-      { lat: 29.8, lon: -95.4 },
-      { lat: 31.2, lon: 121.5 },
-      { lat: 19.1, lon: 72.9 },
-      { lat: 6.5, lon: 3.4 },
-      { lat: 51.5, lon: -0.1 },
-      { lat: 40.7, lon: -74.0 },
+      { name: 'Rotterdam', lat: 51.9, lon: 4.5 },
+      { name: 'Singapore', lat: 1.3, lon: 103.8 },
+      { name: 'Houston', lat: 29.8, lon: -95.4 },
+      { name: 'Shanghai', lat: 31.2, lon: 121.5 },
+      { name: 'Mumbai', lat: 19.1, lon: 72.9 },
+      { name: 'Lagos', lat: 6.5, lon: 3.4 },
+      { name: 'London', lat: 51.5, lon: -0.1 },
+      { name: 'New York', lat: 40.7, lon: -74.0 },
     ]
     const dotTex = makeDotTexture()
     ;[hub, ...spokes].forEach((p) => {
@@ -190,19 +190,31 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
       mid.normalize().multiplyScalar(1 + 0.15 + a.distanceTo(b) * 0.12)
       const curve = new THREE.QuadraticBezierCurve3(a, mid, b)
       const geo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(64))
-      globeSpin.add(
-        new THREE.Line(
-          geo,
-          new THREE.LineBasicMaterial({ color: 0xd4af37, transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending, depthWrite: false }),
-        ),
+      const line = new THREE.Line(
+        geo,
+        new THREE.LineBasicMaterial({ color: 0xd4af37, transparent: true, opacity: 0.45, blending: THREE.AdditiveBlending, depthWrite: false }),
       )
+      globeSpin.add(line)
       const pulse = new THREE.Sprite(
         new THREE.SpriteMaterial({ map: dotTex, color: 0xf0d488, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }),
       )
       pulse.scale.setScalar(0.055)
       globeSpin.add(pulse)
-      return { curve, pulse, speed: 0.12 + Math.random() * 0.12, offset: Math.random() }
+      return { name: p.name, curve, line, pulse, speed: 0.12 + Math.random() * 0.12, offset: Math.random() }
     })
+
+    // Hub sequence the globe spins through as the page scrolls.
+    const sequence = [
+      { lat: 25.2, lon: 55.3 }, // Dubai
+      { lat: 19.1, lon: 72.9 }, // Mumbai
+      { lat: 1.3, lon: 103.8 }, // Singapore
+      { lat: 31.2, lon: 121.5 }, // Shanghai
+      { lat: 29.8, lon: -95.4 }, // Houston
+      { lat: 51.5, lon: -0.1 }, // London
+    ]
+    const seqNames = ['Dubai', 'Mumbai', 'Singapore', 'Shanghai', 'Houston', 'London']
+    const yawFor = (lon: number) => (-90 - lon) * D2R
+    const pitchFor = (lat: number) => Math.max(-0.45, Math.min(0.45, -lat * D2R * 0.6))
 
     let w = 0
     let h = 0
@@ -220,9 +232,19 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
     layout()
     window.addEventListener('resize', layout)
 
+    // --- Scroll progress drives which hub the globe faces ---
+    let scrollP = 0
+    const onScroll = () => {
+      // Map the hub sequence over the first ~1.8 viewports, where the hero
+      // globe is on screen, so the spin is visible as you start scrolling.
+      const max = window.innerHeight * 1.8
+      scrollP = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+
     // --- Pointer interaction: drag to rotate (with momentum) ---
     const BASE_TILT_X = world.rotation.x
-    let autoRot = 0
     let userYaw = 0
     let userPitch = 0
     let velYaw = 0
@@ -259,23 +281,46 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
     window.addEventListener('pointerup', onUp)
 
     const clock = new THREE.Clock()
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t
+    const tmpScale = new THREE.Vector3()
+    let curYaw = yawFor(sequence[0].lon)
+    let curPitch = BASE_TILT_X + pitchFor(sequence[0].lat)
     let raf = 0
     const loop = () => {
       const dt = clock.getDelta()
-      if (animate && !dragging) autoRot += dt * 0.05
       if (!dragging) {
         userYaw += velYaw
-        velYaw *= 0.94
+        velYaw *= 0.92
         if (Math.abs(velYaw) < 1e-4) velYaw = 0
       }
-      globeSpin.rotation.y = autoRot + userYaw
-      world.rotation.x = BASE_TILT_X + userPitch
-      if (animate) {
-        arcs.forEach((arc) => {
+      // Interpolated hub from scroll progress
+      const idx = scrollP * (sequence.length - 1)
+      const i0 = Math.floor(idx)
+      const i1 = Math.min(i0 + 1, sequence.length - 1)
+      const f = idx - i0
+      const lonI = lerp(sequence[i0].lon, sequence[i1].lon, f)
+      const latI = lerp(sequence[i0].lat, sequence[i1].lat, f)
+      const desiredYaw = yawFor(lonI) + userYaw
+      const desiredPitch = BASE_TILT_X + pitchFor(latI) + userPitch
+      const ease = dragging ? 0.4 : 0.07
+      curYaw = lerp(curYaw, desiredYaw, ease)
+      curPitch = lerp(curPitch, desiredPitch, ease)
+      globeSpin.rotation.y = curYaw
+      world.rotation.x = curPitch
+
+      // Highlight the active hub's arc
+      const activeName = seqNames[Math.round(idx)]
+      arcs.forEach((arc) => {
+        const active = arc.name === activeName
+        const mat = arc.line.material as THREE.LineBasicMaterial
+        mat.opacity += ((active ? 0.95 : 0.3) - mat.opacity) * 0.1
+        const ps = active ? 0.1 : 0.05
+        arc.pulse.scale.lerp(tmpScale.setScalar(ps), 0.1)
+        if (animate) {
           arc.offset = (arc.offset + dt * arc.speed) % 1
           arc.curve.getPointAt(arc.offset, arc.pulse.position)
-        })
-      }
+        }
+      })
       renderer.render(scene, camera)
       raf = requestAnimationFrame(loop)
     }
@@ -285,6 +330,7 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
     return () => {
       cancelAnimationFrame(raf)
       window.removeEventListener('resize', layout)
+      window.removeEventListener('scroll', onScroll)
       canvas.removeEventListener('pointerdown', onDown)
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerup', onUp)
