@@ -75,7 +75,7 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
     const maxAniso = renderer.capabilities.getMaxAnisotropy()
     ;[dayMap, nightMap, specMap].forEach((t) => (t.anisotropy = maxAniso))
 
-    const SUN = new THREE.Vector3(0.92, 0.28, 0.4).normalize()
+    const SUN = new THREE.Vector3(0.7, 0.32, 0.72).normalize()
 
     // Earth — custom shader blending day/night by sun direction, with ocean specular.
     const earthMat = new THREE.ShaderMaterial({
@@ -111,19 +111,22 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
           vec3 N = normalize(vNormalW);
           vec3 L = normalize(uSun);
           float cosA = dot(N, L);
-          float dayAmt = smoothstep(-0.12, 0.25, cosA);
+          float dayAmt = smoothstep(-0.25, 0.32, cosA);
           vec3 day = texture2D(dayMap, vUv).rgb;
           vec3 night = texture2D(nightMap, vUv).rgb;
           float diff = clamp(cosA, 0.0, 1.0);
-          vec3 dayLit = day * (0.45 + 0.95 * diff);
           float water = texture2D(specMap, vUv).r;
+          vec3 dayLit = day * (0.85 + 0.55 * diff);
+          // lift oceans to a vivid blue marble (water mask = specular map)
+          vec3 ocean = vec3(0.09, 0.26, 0.5) * (0.55 + 0.6 * diff);
+          dayLit = mix(dayLit, ocean, water * 0.6);
           vec3 V = normalize(uCamera - vWorldPos);
           vec3 H = normalize(L + V);
           float spec = pow(max(dot(N, H), 0.0), 80.0) * water * dayAmt;
-          vec3 col = mix(night * 1.5, dayLit, dayAmt) + vec3(1.0, 0.92, 0.7) * spec * 0.5;
-          // limb darkening — fall off toward the silhouette so the sphere reads as 3D
+          vec3 col = mix(night * 1.4, dayLit, dayAmt) + vec3(1.0, 0.92, 0.7) * spec * 0.4;
+          // gentle limb darkening — keeps the sphere round without going dark
           float ndv = clamp(dot(N, V), 0.0, 1.0);
-          col *= 0.4 + 0.6 * smoothstep(0.0, 0.8, ndv);
+          col *= 0.72 + 0.28 * smoothstep(0.0, 0.85, ndv);
           float lum = dot(col, vec3(0.299, 0.587, 0.114));
           col = mix(vec3(lum), col, 1.3); // saturation boost
           gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
@@ -134,14 +137,13 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
     globeSpin.add(earth)
 
     // Atmosphere rim glow
-    const atmosphere = new THREE.Mesh(
-      new THREE.SphereGeometry(1.15, 64, 64),
+    const atmoMat = (color: number, power: number, strength: number) =>
       new THREE.ShaderMaterial({
         transparent: true,
         side: THREE.BackSide,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
-        uniforms: { uColor: { value: new THREE.Color(0x3f86d4) } },
+        uniforms: { uColor: { value: new THREE.Color(color) }, uPow: { value: power }, uStr: { value: strength } },
         vertexShader: `
           varying vec3 vNormal;
           void main() {
@@ -151,15 +153,19 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
         `,
         fragmentShader: `
           uniform vec3 uColor;
+          uniform float uPow;
+          uniform float uStr;
           varying vec3 vNormal;
           void main() {
-            float i = pow(0.66 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.6);
-            gl_FragColor = vec4(uColor, 1.0) * clamp(i, 0.0, 1.0);
+            float i = pow(0.74 - dot(vNormal, vec3(0.0, 0.0, 1.0)), uPow);
+            gl_FragColor = vec4(uColor, 1.0) * clamp(i, 0.0, 1.0) * uStr;
           }
         `,
-      }),
-    )
-    world.add(atmosphere)
+      })
+    // Inner crisp rim + outer soft halo for a stronger atmosphere glow.
+    const atmosphere = new THREE.Mesh(new THREE.SphereGeometry(1.14, 64, 64), atmoMat(0x4da2f0, 2.4, 1.6))
+    const atmoHalo = new THREE.Mesh(new THREE.SphereGeometry(1.32, 64, 64), atmoMat(0x3a7fd0, 1.6, 0.7))
+    world.add(atmosphere, atmoHalo)
 
     // Trade hubs + arcs (gold, on top of the Earth)
     const hub = { lat: 25.2, lon: 55.3 } // Dubai
