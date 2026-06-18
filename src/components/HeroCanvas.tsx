@@ -1,10 +1,11 @@
 import { useEffect, useRef } from 'react'
 
 /**
- * Animated canvas backdrop: a slowly rotating dark globe with glowing gold
- * great-circle trade-route arcs and drifting particles. Self-contained (no deps).
- * Used as the hero's poster/fallback when video is unavailable, on mobile, or
- * under prefers-reduced-motion (in which case it renders a single static frame).
+ * Animated canvas backdrop: a slowly rotating dark globe rendered as a true
+ * projected sphere wireframe (evenly spaced meridians + parallels, front
+ * hemisphere only), with glowing gold trade-route arcs and drifting particles.
+ * Self-contained (no deps). Used as the hero's poster/fallback when video is
+ * unavailable, on mobile, or under prefers-reduced-motion (single static frame).
  */
 export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -19,6 +20,7 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
     let w = 0
     let h = 0
     const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    const TILT = 0.34 // axial tilt (~19°) so the poles read correctly
 
     const resize = () => {
       const parent = canvas.parentElement
@@ -36,29 +38,59 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
     // Globe geometry — positioned right-of-center, partly off the edge.
     const globe = () => ({ cx: w * 0.72, cy: h * 0.52, r: Math.min(w, h) * 0.42 })
 
-    // Trade hubs as lon/lat-ish angles mapped onto the visible hemisphere.
-    const hubs = [
-      { lon: 0.2, lat: 0.35 },
-      { lon: -0.6, lat: -0.1 },
-      { lon: 0.9, lat: 0.0 },
-      { lon: -0.2, lat: -0.5 },
-      { lon: 0.55, lat: 0.55 },
-      { lon: -0.9, lat: 0.3 },
-      { lon: 0.3, lat: -0.4 },
-    ]
+    type Pt = { x: number; y: number; z: number; front: boolean; depth: number }
 
-    const project = (lon: number, lat: number, rot: number, g: ReturnType<typeof globe>) => {
-      const a = lon * Math.PI + rot
-      const x = Math.sin(a) * Math.cos(lat * 1.2)
-      const z = Math.cos(a) * Math.cos(lat * 1.2)
-      const y = Math.sin(lat * 1.2)
+    // Orthographic projection of a unit-sphere point (lon/lat in radians),
+    // rotated about the polar axis by `rot`, then tilted about the X axis.
+    const project = (lon: number, lat: number, rot: number, g: ReturnType<typeof globe>): Pt => {
+      const a = lon + rot
+      const cosLat = Math.cos(lat)
+      const X = Math.sin(a) * cosLat
+      const Y0 = Math.sin(lat)
+      const Z0 = Math.cos(a) * cosLat
+      const Y = Y0 * Math.cos(TILT) - Z0 * Math.sin(TILT)
+      const Z = Y0 * Math.sin(TILT) + Z0 * Math.cos(TILT)
       return {
-        x: g.cx + x * g.r,
-        y: g.cy + y * g.r,
-        front: z > -0.1,
-        depth: (z + 1) / 2,
+        x: g.cx + X * g.r,
+        y: g.cy - Y * g.r,
+        z: Z,
+        front: Z >= -0.015,
+        depth: (Z + 1) / 2,
       }
     }
+
+    // Stroke a polyline, breaking it wherever points dip behind the sphere.
+    const strokeLine = (pts: Pt[], color: string, lw: number) => {
+      ctx.strokeStyle = color
+      ctx.lineWidth = lw
+      ctx.beginPath()
+      let drawing = false
+      for (const p of pts) {
+        if (p.front) {
+          if (drawing) ctx.lineTo(p.x, p.y)
+          else {
+            ctx.moveTo(p.x, p.y)
+            drawing = true
+          }
+        } else {
+          drawing = false
+        }
+      }
+      ctx.stroke()
+    }
+
+    const D2R = Math.PI / 180
+
+    // Trade hubs (lon/lat in radians) spread across the visible hemisphere.
+    const hubs = [
+      { lon: -1.15, lat: 0.5 },
+      { lon: -0.45, lat: 0.12 },
+      { lon: 0.25, lat: 0.62 },
+      { lon: 0.95, lat: -0.05 },
+      { lon: -0.7, lat: -0.5 },
+      { lon: 0.1, lat: -0.6 },
+      { lon: 1.35, lat: 0.32 },
+    ]
 
     const particles = Array.from({ length: 46 }, () => ({
       x: Math.random(),
@@ -97,28 +129,27 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
       ctx.arc(g.cx, g.cy, g.r, 0, Math.PI * 2)
       ctx.fillStyle = disc
       ctx.fill()
-      ctx.strokeStyle = 'rgba(212, 175, 55, 0.25)'
+      ctx.strokeStyle = 'rgba(212, 175, 55, 0.28)'
       ctx.lineWidth = 1
       ctx.stroke()
 
-      // Latitude / longitude grid
-      ctx.strokeStyle = 'rgba(91, 113, 133, 0.18)'
-      ctx.lineWidth = 0.7
-      for (let i = 1; i < 6; i++) {
-        const ry = (i / 6) * 2 - 1
-        ctx.beginPath()
-        ctx.ellipse(g.cx, g.cy + ry * g.r, g.r * Math.sqrt(1 - ry * ry), g.r * 0.16, 0, 0, Math.PI * 2)
-        ctx.stroke()
-      }
-      for (let i = 0; i < 6; i++) {
-        const phase = (i / 6) * Math.PI + rot
-        const rx = Math.abs(Math.cos(phase)) * g.r
-        ctx.beginPath()
-        ctx.ellipse(g.cx, g.cy, rx, g.r, 0, 0, Math.PI * 2)
-        ctx.stroke()
+      // Meridians (every 15° of longitude)
+      for (let m = 0; m < 24; m++) {
+        const lon = m * 15 * D2R
+        const pts: Pt[] = []
+        for (let lat = -90; lat <= 90; lat += 4) pts.push(project(lon, lat * D2R, rot, g))
+        strokeLine(pts, 'rgba(91, 113, 133, 0.16)', 0.7)
       }
 
-      // Hub points
+      // Parallels (every 20° of latitude)
+      for (let latDeg = -80; latDeg <= 80; latDeg += 20) {
+        const lat = latDeg * D2R
+        const pts: Pt[] = []
+        for (let lon = 0; lon <= 360; lon += 4) pts.push(project(lon * D2R, lat, rot, g))
+        strokeLine(pts, latDeg === 0 ? 'rgba(91, 113, 133, 0.26)' : 'rgba(91, 113, 133, 0.16)', latDeg === 0 ? 0.9 : 0.7)
+      }
+
+      // Hub points (front-facing only)
       const pts = hubs.map((hh) => project(hh.lon, hh.lat, rot, g))
       pts.forEach((p) => {
         if (!p.front) return
@@ -133,7 +164,7 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
         ctx.stroke()
       })
 
-      // Arcs between consecutive front-facing hubs
+      // Arcs between front-facing hubs
       for (let i = 0; i < pts.length; i++) {
         const a = pts[i]
         const b = pts[(i + 2) % pts.length]
