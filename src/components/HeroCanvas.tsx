@@ -217,12 +217,57 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
     layout()
     window.addEventListener('resize', layout)
 
+    // --- Pointer interaction: drag to rotate (with momentum) ---
+    const BASE_TILT_X = world.rotation.x
+    let autoRot = 0
+    let userYaw = 0
+    let userPitch = 0
+    let velYaw = 0
+    let dragging = false
+    let lastX = 0
+    let lastY = 0
+    canvas.style.cursor = 'grab'
+    canvas.style.touchAction = 'pan-y'
+
+    const onDown = (e: PointerEvent) => {
+      if (e.pointerType !== 'mouse') return
+      dragging = true
+      velYaw = 0
+      lastX = e.clientX
+      lastY = e.clientY
+      canvas.style.cursor = 'grabbing'
+    }
+    const onMove = (e: PointerEvent) => {
+      if (!dragging) return
+      const dx = e.clientX - lastX
+      const dy = e.clientY - lastY
+      userYaw += dx * 0.006
+      userPitch = Math.max(-0.55, Math.min(0.55, userPitch + dy * 0.005))
+      velYaw = dx * 0.006
+      lastX = e.clientX
+      lastY = e.clientY
+    }
+    const onUp = () => {
+      dragging = false
+      canvas.style.cursor = 'grab'
+    }
+    canvas.addEventListener('pointerdown', onDown)
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
+
     const clock = new THREE.Clock()
     let raf = 0
     const loop = () => {
       const dt = clock.getDelta()
+      if (animate && !dragging) autoRot += dt * 0.05
+      if (!dragging) {
+        userYaw += velYaw
+        velYaw *= 0.94
+        if (Math.abs(velYaw) < 1e-4) velYaw = 0
+      }
+      globeSpin.rotation.y = autoRot + userYaw
+      world.rotation.x = BASE_TILT_X + userPitch
       if (animate) {
-        globeSpin.rotation.y += dt * 0.05
         arcs.forEach((arc) => {
           arc.offset = (arc.offset + dt * arc.speed) % 1
           arc.curve.getPointAt(arc.offset, arc.pulse.position)
@@ -237,6 +282,9 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
     return () => {
       cancelAnimationFrame(raf)
       window.removeEventListener('resize', layout)
+      canvas.removeEventListener('pointerdown', onDown)
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
       renderer.dispose()
       scene.traverse((o) => {
         const m = o as THREE.Mesh

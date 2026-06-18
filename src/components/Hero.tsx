@@ -57,13 +57,13 @@ export default function Hero() {
         )}
 
         {/* Gradient overlays — opaque behind text (left), clear over the globe (right) */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0a1622] from-15% via-[#0a1622]/45 via-45% to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a1622]/60 via-transparent to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0a1622] from-15% via-[#0a1622]/45 via-45% to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a1622]/60 via-transparent to-transparent" />
       </div>
 
-      {/* Content */}
-      <div className="container-x relative z-10 py-28">
-        <div className="max-w-3xl">
+      {/* Content (wrapper lets pointer events fall through to the globe; text/buttons re-enable) */}
+      <div className="container-x pointer-events-none relative z-10 py-28">
+        <div className="max-w-3xl [&_a]:pointer-events-auto">
           <p className="eyebrow mb-6 animate-fade-up">Global Commodity Trading</p>
           <h1 className="font-display text-4xl font-bold leading-[1.08] tracking-tight text-balance sm:text-5xl lg:text-6xl">
             <span className="text-white">Powering Global Trade Through </span>

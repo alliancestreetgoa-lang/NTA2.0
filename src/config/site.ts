@@ -9,6 +9,19 @@
 import { Wheat, Flame, Fuel, Droplets, FlaskConical, Sprout, type LucideIcon } from 'lucide-react'
 import { company as raw, divisions as rawDivisions } from './company'
 
+const U = 'https://images.unsplash.com/photo-'
+const img = (id: string) => `${U}${id}?auto=format&fit=crop&w=800&q=70`
+
+// Topic image per division (background imagery on the cards / detail heroes).
+const divisionImages: Record<string, string> = {
+  fertilizers: img('1500382017468-9049fed747ef'), // green agricultural field
+  grains: img('1574323347407-f5e1ad6d020b'), // wheat
+  petrochemicals: img('1518709268805-4e9042af9f23'), // refinery / chemical plant
+  'crude-oil': img('1532187863486-abf9dbad1b69'), // oil / industrial
+  'refined-oil': img('1519003722824-194d4455a60c'), // fuel
+  lng: img('1610552050890-fe99536c2615'), // gas / pipes
+}
+
 const iconMap: Record<string, LucideIcon> = {
   Wheat,
   Flame,
@@ -28,6 +41,7 @@ export interface Division {
   operate: string[]
   tradeLabel: string
   operateLabel: string
+  image: string
 }
 
 const mapRaw = (d: (typeof rawDivisions)[number]): Division => ({
@@ -42,6 +56,7 @@ const mapRaw = (d: (typeof rawDivisions)[number]): Division => ({
   operate: d.services,
   tradeLabel: 'What We Trade',
   operateLabel: 'Services & Capabilities',
+  image: divisionImages[d.slug] ?? divisionImages['crude-oil'],
 })
 
 const rawBySlug = Object.fromEntries(rawDivisions.map((d) => [d.slug, mapRaw(d)])) as Record<string, Division>
@@ -77,6 +92,7 @@ const fertilizers: Division = {
   ],
   tradeLabel: 'What We Trade',
   operateLabel: 'Services & Capabilities',
+  image: divisionImages.fertilizers,
 }
 
 const petrochemicals: Division = {
@@ -92,6 +108,7 @@ const petrochemicals: Division = {
   operate: ['International trading', 'Bulk supply contracts', 'Logistics coordination', 'Strategic procurement'],
   tradeLabel: 'What We Trade',
   operateLabel: 'Services & Capabilities',
+  image: divisionImages.petrochemicals,
 }
 
 // Fertilizers lead the lineup to reflect the company's focus.
@@ -126,9 +143,6 @@ export const about = {
     'Chemical fertilizers sit at the heart of our agricultural business. We connect the world’s leading nitrogen, phosphate and potash producers with importers and distributors across emerging and established markets — supporting food security while applying the same rigor to our grains, petrochemical and energy desks.',
   ],
 }
-
-const U = 'https://images.unsplash.com/photo-'
-const img = (id: string) => `${U}${id}?auto=format&fit=crop&w=800&q=70`
 
 // Topic images for the "Why NTA" capability cards (matched by order).
 const whyImages = [
