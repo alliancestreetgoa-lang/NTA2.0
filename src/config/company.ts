@@ -1,253 +1,127 @@
-/**
- * NTA Group — single source of truth for all site copy, contact details, and data.
- * Every value here is a crafted placeholder. Swap real details in one place.
- */
-
-import type { LucideIcon } from 'lucide-react'
-import { Wheat, Flame, Droplets, Fuel } from 'lucide-react'
-
-export const company = {
-  name: 'NTA Group',
-  tagline: 'Global Commodity Trading Solutions',
-  email: 'info@ntagroup.ae',
-  website: 'ntagroup.ae',
-  phone: '+971 4 000 0000',
-  address: 'Jumeirah Lakes Towers, Dubai, United Arab Emirates',
-  hours: 'Sun – Fri · 09:00–18:00 GST',
-  founded: '2014',
-} as const
-
-export const hero = {
-  headline: 'Powering Global Trade Through Energy & Agricultural Commodities',
-  subhead:
-    'NTA Group is a global trading company specializing in grains, cereals, legumes, crude oil, refined petroleum products, and industrial & liquefied natural gas trading across international markets.',
-  // Free, hotlink-friendly stock clip — swap for owned footage.
-  videoSrc:
-    'https://cdn.coverr.co/videos/coverr-an-oil-refinery-at-night-2633/1080p.mp4',
-  poster:
-    'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1600&q=60',
-  primaryCta: { label: 'Explore Our Divisions', href: '#divisions' },
-  secondaryCta: { label: 'Contact Our Trading Team', href: '#contact' },
-}
-
-export const about = {
-  eyebrow: 'About NTA Group',
-  heading: 'An international trading house connecting producers and global markets.',
-  paragraphs: [
-    'NTA Group is an international trading organization focused on connecting producers, suppliers, and buyers across global commodity markets.',
-    'With expertise in agricultural commodities and energy products, we facilitate reliable and efficient trade solutions while maintaining the highest standards of professionalism, compliance, and operational excellence.',
-    'Our extensive network enables us to deliver competitive sourcing, strategic trading solutions, and long-term value to our partners worldwide.',
-  ],
-}
-
-export interface Division {
+export type Division = {
   slug: string
-  icon: LucideIcon
-  name: string
-  short: string
+  nav: string
+  title: string
   tagline: string
+  icon: string
+  summary: string
   overview: string
-  trade: string[]
-  operate: string[]
-  // section label for the "what we trade" / capability lists
-  tradeLabel: string
-  operateLabel: string
+  trades: string[]
+  services: string[]
+  image: string
 }
+
+export type Market = { name: string; x: number; y: number }
 
 export const divisions: Division[] = [
   {
     slug: 'grains',
-    icon: Wheat,
-    name: 'Grains, Cereals & Legumes Trading',
-    short: 'High-quality agricultural commodities sourced from major producing regions worldwide.',
-    tagline: 'Feeding markets from farm to port.',
+    nav: 'Grains & Legumes',
+    title: 'Grains, Cereals & Legumes Trading',
+    tagline: 'Feeding markets with reliable agri-commodity supply.',
+    icon: 'Wheat',
+    summary: 'Wheat, maize, rice, pulses and oilseeds sourced and delivered at global scale.',
     overview:
-      'We source and trade high-quality agricultural commodities from major producing regions worldwide, connecting reliable supply with consistent global demand.',
-    tradeLabel: 'Products',
-    trade: [
-      'Wheat',
-      'Corn (Maize)',
-      'Barley',
-      'Rice',
-      'Soybeans',
-      'Lentils',
-      'Chickpeas',
-      'Beans',
-      'Peas',
-      'Other Agricultural Commodities',
-    ],
-    operateLabel: 'Services',
-    operate: [
-      'Global Sourcing',
-      'Bulk Procurement',
-      'Export & Import Facilitation',
-      'Supply Chain Management',
-      'Commodity Risk Management',
-    ],
+      'NTA Group sources grains, cereals and legumes from leading producing regions and delivers them to mills, processors and distributors worldwide. We pair deep origination relationships with disciplined logistics to keep supply moving reliably across seasons and price cycles.',
+    trades: ['Wheat', 'Corn / Maize', 'Barley', 'Rice', 'Soybeans & oilseeds', 'Lentils', 'Chickpeas', 'Beans', 'Peas'],
+    services: ['Global sourcing', 'Bulk procurement', 'Export & import facilitation', 'Supply-chain management', 'Commodity risk management'],
+    image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=1200&q=80',
   },
   {
     slug: 'lng',
-    icon: Flame,
-    name: 'Industrial & Liquefied Natural Gas Trading',
-    short: 'International trading of industrial gases and LNG through trusted global partnerships.',
-    tagline: 'Energy that moves across borders.',
+    nav: 'Industrial & LNG',
+    title: 'Industrial & Liquefied Natural Gas Trading',
+    tagline: 'Cleaner energy, dependably delivered.',
+    icon: 'Flame',
+    summary: 'LNG, natural gas and industrial gas solutions backed by international supply.',
     overview:
-      'NTA Group facilitates international trading of industrial gases and liquefied natural gas through trusted global partnerships and long-term supply relationships.',
-    tradeLabel: 'Products',
-    trade: ['LNG', 'Natural Gas', 'Industrial Gas Solutions'],
-    operateLabel: 'Capabilities',
-    operate: [
-      'International LNG Supply',
-      'Long-Term Trading Agreements',
-      'Industrial Gas Procurement',
-      'Cross-Border Trading Solutions',
-    ],
+      'We trade liquefied natural gas, natural gas and industrial gases, connecting producers with industrial and utility buyers. From spot cargoes to long-term agreements, NTA Group manages contracting, shipping and cross-border logistics to deliver dependable energy.',
+    trades: ['Liquefied Natural Gas (LNG)', 'Natural gas', 'Industrial gas solutions'],
+    services: ['International LNG supply', 'Long-term supply agreements', 'Industrial gas procurement', 'Cross-border solutions'],
+    image: 'https://images.unsplash.com/photo-1605557202138-c7a5f6e6e8b9?auto=format&fit=crop&w=1200&q=80',
   },
   {
     slug: 'refined-oil',
-    icon: Droplets,
-    name: 'Refined Oil Products Trading',
-    short: 'International trading of refined petroleum products across strategic global markets.',
-    tagline: 'Refined products, dependable delivery.',
+    nav: 'Refined Products',
+    title: 'Trading Refined Oil Products Abroad',
+    tagline: 'Refined products moving where they are needed most.',
+    icon: 'Fuel',
+    summary: 'Diesel, gasoline, jet fuel, fuel oil, naphtha, base oils and marine fuels.',
     overview:
-      'We support international trading activities for refined petroleum products across strategic global markets, backed by robust logistics and procurement.',
-    tradeLabel: 'Products',
-    trade: [
-      'Diesel',
-      'Gasoline',
-      'Jet Fuel',
-      'Fuel Oil',
-      'Naphtha',
-      'Base Oils',
-      'Marine Fuels',
-    ],
-    operateLabel: 'Services',
-    operate: [
-      'International Trading',
-      'Bulk Supply Contracts',
-      'Logistics Coordination',
-      'Strategic Procurement',
-    ],
+      'NTA Group trades a full slate of refined petroleum products in international markets, bridging refineries and end-users. We arbitrage regional supply and demand, coordinate cargo logistics and deliver products reliably under recognised international terms.',
+    trades: ['Diesel', 'Gasoline', 'Jet fuel', 'Fuel oil', 'Naphtha', 'Base oils', 'Marine fuels'],
+    services: ['International trading', 'Bulk supply contracts', 'Logistics coordination', 'Strategic procurement'],
+    image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80',
   },
   {
     slug: 'crude-oil',
-    icon: Fuel,
-    name: 'Crude Oil Trading',
-    short: 'Connecting crude suppliers and buyers through transparent commercial relationships.',
-    tagline: 'Crude trading, transparently structured.',
+    nav: 'Crude Oil',
+    title: 'Crude Oil Trading Abroad',
+    tagline: 'Crude cargoes connecting producers to global refineries.',
+    icon: 'Droplets',
+    summary: 'Spot and term crude trading with global market access.',
     overview:
-      'NTA Group participates in international crude oil trading, connecting suppliers and buyers through efficient and transparent commercial relationships.',
-    tradeLabel: 'Capabilities',
-    trade: [
-      'Spot Transactions',
-      'Long-Term Supply Agreements',
-      'Global Market Access',
-      'Contract Structuring',
-      'Trading Support Services',
-    ],
-    operateLabel: 'How We Operate',
-    operate: [
-      'Rigorous counterparty due diligence',
-      'CIF / FOB international delivery terms',
-      'Chartering & cargo coordination',
-      'Settlement and trade finance support',
-    ],
+      'We trade crude oil internationally, linking producing nations with refining centres. NTA Group manages spot transactions, long-term agreements and contract structuring to move crude efficiently and securely across global trade routes.',
+    trades: ['Spot transactions', 'Long-term supply agreements', 'Multiple crude grades'],
+    services: ['Global market access', 'Contract structuring', 'Trading support', 'Logistics & chartering'],
+    image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1200&q=80',
   },
 ]
 
-export function divisionBySlug(slug?: string): Division | undefined {
+export const company = {
+  name: 'NTA Group',
+  legalName: 'NTA Group Trading L.L.C.',
+  foundedYear: 2014,
+  tagline: 'Powering global trade through energy and agricultural commodities.',
+  heroHeadline: 'Powering Global Trade Through Energy & Agricultural Commodities.',
+  heroSub:
+    'A UAE-headquartered multi-commodity trading house, moving grains, gas, refined products and crude oil between the world\'s producers and markets — reliably and at scale.',
+  about: {
+    lead: 'A UAE trading house built for global markets.',
+    body:
+      'From our base at the crossroads of global trade, NTA Group connects producers and markets across continents. We built our business on long-term relationships, operational discipline and a simple promise: deliver what we commit to, every time — across agriculture and energy.',
+  },
+  capabilities: [
+    { title: 'Global network', body: 'Producers, refiners, mills and buyers across every major region.' },
+    { title: 'Market expertise', body: 'Deep desk knowledge across agri-commodities and energy.' },
+    { title: 'Reliable supply chains', body: 'Bulk, containerised and tanker logistics coordinated end to end.' },
+    { title: 'Professional compliance', body: 'Rigorous adherence to international trade, safety and sanctions standards.' },
+    { title: 'Strategic partnerships', body: 'Long-term relationships that weather price and supply cycles.' },
+  ],
+  stats: [
+    { value: '30+', label: 'Countries served' },
+    { value: '4', label: 'Commodity verticals' },
+    { value: '1M+', label: 'MT traded annually' },
+    { value: '10+', label: 'Years of trading' },
+  ],
+  markets: [
+    { name: 'Dubai', x: 65.4, y: 36.0 },
+    { name: 'London', x: 50.0, y: 21.4 },
+    { name: 'Rotterdam', x: 51.3, y: 21.2 },
+    { name: 'Houston', x: 23.5, y: 33.5 },
+    { name: 'São Paulo', x: 37.1, y: 63.1 },
+    { name: 'Lagos', x: 50.9, y: 46.4 },
+    { name: 'Mumbai', x: 70.2, y: 39.4 },
+    { name: 'Singapore', x: 78.8, y: 49.3 },
+    { name: 'Shanghai', x: 83.8, y: 32.7 },
+    { name: 'Tokyo', x: 88.8, y: 30.2 },
+  ],
+  sustainability: [
+    { title: 'Responsible trading', body: 'Ethical, transparent dealing across every counterparty and cargo.' },
+    { title: 'Compliance first', body: 'Full alignment with international sanctions, safety and environmental standards.' },
+    { title: 'Efficient logistics', body: 'Optimised routing and load planning to reduce waste and emissions.' },
+    { title: 'Long-term partnerships', body: 'Durable relationships that support stable, sustainable supply.' },
+  ],
+  contact: {
+    addressLines: ['NTA Group Trading L.L.C.', 'Business Bay, Dubai', 'United Arab Emirates'],
+    phone: '+971 4 000 0000',
+    email: 'info@ntagroup.ae',
+    hours: 'Sunday – Thursday, 9:00 – 18:00 GST',
+  },
+  heroVideo: 'https://cdn.coverr.co/videos/coverr-cargo-ship-at-sea-1573/1080p.mp4',
+  heroPoster: 'https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?auto=format&fit=crop&w=1600&q=80',
+}
+
+export function getDivisionBySlug(slug: string): Division | undefined {
   return divisions.find((d) => d.slug === slug)
 }
-
-export const whyChoose = [
-  {
-    title: 'Global Trading Network',
-    body: 'Strong relationships across major commodity-producing and consuming regions.',
-  },
-  {
-    title: 'Market Expertise',
-    body: 'Deep understanding of agricultural and energy markets and their cycles.',
-  },
-  {
-    title: 'Reliable Supply Chains',
-    body: 'Efficient logistics and procurement solutions from origin to destination.',
-  },
-  {
-    title: 'Professional Compliance',
-    body: 'Commitment to international trade regulations and industry standards.',
-  },
-  {
-    title: 'Strategic Partnerships',
-    body: 'Long-term relationships with suppliers, traders, and end-users.',
-  },
-]
-
-export const stats = [
-  { value: '30+', label: 'Countries Served' },
-  { value: '4', label: 'Commodity Verticals' },
-  { value: '1M+', label: 'MT Traded Annually' },
-  { value: '10+', label: 'Years of Trade' },
-]
-
-/** Global markets — coordinates are approximate lon/lat for the SVG equirectangular map. */
-export interface Market {
-  name: string
-  lat: number
-  lon: number
-  hub?: boolean
-}
-
-export const markets: Market[] = [
-  { name: 'United Arab Emirates', lat: 24.0, lon: 54.0, hub: true },
-  { name: 'Saudi Arabia', lat: 24.0, lon: 45.0 },
-  { name: 'India', lat: 21.0, lon: 78.0 },
-  { name: 'China', lat: 35.0, lon: 104.0 },
-  { name: 'Singapore', lat: 1.3, lon: 103.8 },
-  { name: 'Turkey', lat: 39.0, lon: 35.0 },
-  { name: 'Netherlands', lat: 52.1, lon: 5.3 },
-  { name: 'United Kingdom', lat: 54.0, lon: -2.0 },
-  { name: 'United States', lat: 39.0, lon: -98.0 },
-  { name: 'African Markets', lat: 9.0, lon: 21.0 },
-]
-
-export const sustainability = {
-  eyebrow: 'Sustainability & Responsibility',
-  heading: 'Trading responsibly across the global supply chain.',
-  intro:
-    'We pursue commercial excellence without compromising on compliance, transparency, or the long-term health of the markets and communities we serve.',
-  pillars: [
-    {
-      title: 'Responsible Sourcing',
-      body: 'We work with vetted producers and suppliers who meet international quality and conduct standards.',
-    },
-    {
-      title: 'Regulatory Compliance',
-      body: 'Adherence to international trade, sanctions, and anti-money-laundering frameworks across every transaction.',
-    },
-    {
-      title: 'Efficient Logistics',
-      body: 'Optimized routing and cargo planning that reduce waste and emissions per tonne moved.',
-    },
-    {
-      title: 'Long-Term Partnerships',
-      body: 'Durable relationships that create shared, sustainable value for suppliers and end-users alike.',
-    },
-  ],
-}
-
-export const industries = [
-  'Agriculture',
-  'Energy',
-  'Industrial Trading',
-  'Petroleum Products',
-  'International Commodity Markets',
-]
-
-export const nav = [
-  { label: 'Home', href: '#top' },
-  { label: 'About', href: '#about' },
-  { label: 'Divisions', href: '#divisions' },
-  { label: 'Global Markets', href: '#markets' },
-  { label: 'Sustainability', href: '#sustainability' },
-  { label: 'Contact', href: '#contact' },
-]

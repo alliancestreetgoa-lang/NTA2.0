@@ -1,0 +1,55 @@
+/*
+ * Supplementary brand effects (keyframes + helpers).
+ * Kept separate from index.css with literal colors so they survive config
+ * normalization. Imported after index.css in main.tsx.
+ */
+
+/* Full-width gold hairline divider (used in header/footer). */
+.hairline {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #d4af37, transparent);
+}
+
+/* Gold dash before eyebrow labels. */
+.eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 1.75rem;
+  height: 1px;
+  background: #d4af37;
+}
+
+/* Map node pulse. */
+@keyframes nta-pulse-node {
+  0%, 100% { opacity: 0.5; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1.25); }
+}
+.animate-pulse-node {
+  animation: nta-pulse-node 2.6s ease-in-out infinite;
+}
+
+/* Hero eyebrow entrance. */
+@keyframes nta-fade-up {
+  0% { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: nta-fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Scroll cue: smooth drift (no bounce). */
+@keyframes nta-cue-drift {
+  0%, 100% { transform: translateY(0); opacity: 0.55; }
+  50% { transform: translateY(7px); opacity: 1; }
+}
+.animate-cue {
+  animation: nta-cue-drift 2.6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-node,
+  .animate-fade-up,
+  .animate-cue {
+    animation: none;
+  }
+}
