@@ -4,15 +4,15 @@ import { company, divisions, industries } from '../config/site'
 
 export default function Footer() {
   return (
-    <footer className="bg-[#0a1622] text-white">
+    <footer className="bg-[#0a0a0b] text-white">
       <div className="hairline" />
       <div className="container-x grid gap-10 py-16 md:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-1">
           <span className="flex items-center gap-2.5 font-display text-lg font-bold tracking-tight">
-            <span className="grid h-8 w-8 place-items-center rounded-sm bg-[#d4af37] text-sm font-extrabold text-[#0a1622]">
+            <span className="grid h-8 w-8 place-items-center rounded-sm bg-[#ff5a1f] text-sm font-extrabold text-[#0a0a0b]">
               N
             </span>
-            NTA<span className="text-[#d4af37]">Group</span>
+            NTA<span className="text-[#ff5a1f]">Group</span>
           </span>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-[#8b97a5]">
             {company.tagline}. A global trading house bridging producers and markets across energy
@@ -21,7 +21,7 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-[#d4af37]">
+          <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-[#ff5a1f]">
             Divisions
           </h3>
           <ul className="space-y-2.5">
@@ -39,7 +39,7 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-[#d4af37]">
+          <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-[#ff5a1f]">
             Industries Served
           </h3>
           <ul className="space-y-2.5">
@@ -52,22 +52,22 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-[#d4af37]">
+          <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-[#ff5a1f]">
             Contact
           </h3>
           <ul className="space-y-3">
             <li className="flex items-start gap-2.5 text-sm text-[#b6c0cc]">
-              <Mail className="mt-0.5 h-4 w-4 shrink-0 text-[#d4af37]" />
+              <Mail className="mt-0.5 h-4 w-4 shrink-0 text-[#ff5a1f]" />
               <a href={`mailto:${company.email}`} className="hover:text-white">
                 {company.email}
               </a>
             </li>
             <li className="flex items-start gap-2.5 text-sm text-[#b6c0cc]">
-              <Globe className="mt-0.5 h-4 w-4 shrink-0 text-[#d4af37]" />
+              <Globe className="mt-0.5 h-4 w-4 shrink-0 text-[#ff5a1f]" />
               {company.website}
             </li>
             <li className="flex items-start gap-2.5 text-sm text-[#b6c0cc]">
-              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#d4af37]" />
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#ff5a1f]" />
               {company.address}
             </li>
           </ul>

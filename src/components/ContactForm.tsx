@@ -9,7 +9,7 @@ interface Errors {
 }
 
 const inputClass =
-  'w-full rounded-lg border border-white/12 bg-[#0a1622] px-4 py-3 text-sm text-white placeholder:text-[#5b6675] focus:border-[#d4af37] focus:outline-none focus:ring-1 focus:ring-[#d4af37]/50 transition-colors'
+  'w-full rounded-lg border border-white/12 bg-[#0a0a0b] px-4 py-3 text-sm text-white placeholder:text-[#5b6675] focus:border-[#ff5a1f] focus:outline-none focus:ring-1 focus:ring-[#ff5a1f]/50 transition-colors'
 
 /** UI-only contact form: client-side validation + success state, no network call. */
 export default function ContactForm() {
@@ -41,14 +41,14 @@ export default function ContactForm() {
   if (sent) {
     return (
       <div className="lg-card flex flex-col items-center justify-center px-8 py-14 text-center">
-        <div className="grid h-14 w-14 place-items-center rounded-full bg-[#d4af37] text-[#0a1622]">
+        <div className="grid h-14 w-14 place-items-center rounded-full bg-[#ff5a1f] text-[#0a0a0b]">
           <Check className="h-7 w-7" />
         </div>
         <h3 className="mt-5 font-display text-xl font-semibold text-white">Thanks — we'll be in touch</h3>
         <p className="mt-2 max-w-sm text-sm text-[#9aa6b3]">
           Our trading team has received your enquiry and will respond shortly.
         </p>
-        <button onClick={() => setSent(false)} className="mt-6 text-sm font-semibold text-[#d4af37] hover:underline">
+        <button onClick={() => setSent(false)} className="mt-6 text-sm font-semibold text-[#ff5a1f] hover:underline">
           Send another message
         </button>
       </div>

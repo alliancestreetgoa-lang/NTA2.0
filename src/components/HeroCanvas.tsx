@@ -176,7 +176,7 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
     const dotTex = makeDotTexture()
     ;[hub, ...spokes].forEach((p) => {
       const sprite = new THREE.Sprite(
-        new THREE.SpriteMaterial({ map: dotTex, color: 0xeac56a, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }),
+        new THREE.SpriteMaterial({ map: dotTex, color: 0xff7a45, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }),
       )
       sprite.position.copy(lonLatToVec3(p.lon, p.lat, 1.02))
       sprite.scale.setScalar(p === hub ? 0.12 : 0.07)
@@ -192,11 +192,11 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
       const geo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(64))
       const line = new THREE.Line(
         geo,
-        new THREE.LineBasicMaterial({ color: 0xd4af37, transparent: true, opacity: 0.45, blending: THREE.AdditiveBlending, depthWrite: false }),
+        new THREE.LineBasicMaterial({ color: 0xff5a1f, transparent: true, opacity: 0.45, blending: THREE.AdditiveBlending, depthWrite: false }),
       )
       globeSpin.add(line)
       const pulse = new THREE.Sprite(
-        new THREE.SpriteMaterial({ map: dotTex, color: 0xf0d488, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }),
+        new THREE.SpriteMaterial({ map: dotTex, color: 0xffa06a, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }),
       )
       pulse.scale.setScalar(0.055)
       globeSpin.add(pulse)

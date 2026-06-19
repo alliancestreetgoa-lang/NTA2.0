@@ -6,7 +6,7 @@ import Reveal from '../components/Reveal'
 
 export default function GlobalMarkets() {
   return (
-    <section id="markets" className="bg-[#0a1622] py-24 sm:py-28">
+    <section id="markets" className="bg-[#0a0a0b] py-24 sm:py-28">
       <div className="container-x">
         <SectionHeading
           eyebrow="Global Markets"
@@ -22,9 +22,9 @@ export default function GlobalMarkets() {
           {markets.map((m) => (
             <span
               key={m.name}
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#13283f] px-4 py-2 text-sm text-[#b6c0cc]"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#18181b] px-4 py-2 text-sm text-[#b6c0cc]"
             >
-              <span className="h-1.5 w-1.5 rounded-full bg-[#d4af37]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[#ff5a1f]" />
               {m.name}
             </span>
           ))}

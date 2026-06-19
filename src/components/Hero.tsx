@@ -31,7 +31,7 @@ export default function Hero() {
   return (
     <section
       id="top"
-      className="relative flex min-h-[100svh] items-center overflow-hidden bg-[#0a1622] text-white"
+      className="relative flex min-h-[100svh] items-center overflow-hidden bg-[#0a0a0b] text-white"
     >
       {/* Background media */}
       <div className="absolute inset-0">
@@ -58,19 +58,19 @@ export default function Hero() {
         )}
 
         {/* Gradient overlays — opaque behind text (left), clear over the globe (right) */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0a1622] from-15% via-[#0a1622]/45 via-45% to-transparent" />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a1622]/60 via-transparent to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0a0a0b] from-15% via-[#0a0a0b]/45 via-45% to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0a0b]/60 via-transparent to-transparent" />
       </div>
 
       {/* Content (wrapper lets pointer events fall through to the globe; text/buttons re-enable) */}
       <div className="container-x pointer-events-none relative z-10 py-28">
         <div className="max-w-3xl [&_a]:pointer-events-auto">
-          <p className="eyebrow mb-6 animate-fade-up">Global Commodity Trading</p>
-          <h1 className="font-display text-4xl font-bold leading-[1.08] tracking-tight text-balance sm:text-5xl lg:text-6xl">
+          <p className="eyebrow mb-6 animate-fade-up">/ Global Commodity Trading</p>
+          <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.92] tracking-[-0.04em] text-balance sm:text-7xl lg:text-[5.6rem]">
             <span className="text-white">Powering Global Trade Through </span>
-            <span className="text-[#d4af37]">Energy &amp; Agricultural Commodities</span>
+            <span className="text-[#ff5a1f]">Energy &amp; Agricultural Commodities</span>
           </h1>
-          <p className="mt-6 max-w-2xl text-base leading-relaxed text-[#c3cdd8] sm:text-lg">
+          <p className="mt-7 max-w-xl text-base leading-relaxed text-[#cfc9bd] sm:text-lg">
             {hero.subhead}
           </p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -89,7 +89,7 @@ export default function Hero() {
       <a
         href="#about"
         aria-label="Scroll to About"
-        className="absolute bottom-7 left-1/2 z-10 -translate-x-1/2 text-white/50 transition-colors hover:text-[#d4af37]"
+        className="absolute bottom-7 left-1/2 z-10 -translate-x-1/2 text-white/50 transition-colors hover:text-[#ff5a1f]"
       >
         <ChevronDown className={`h-6 w-6 ${reduced ? '' : 'animate-cue'}`} />
       </a>

@@ -5,7 +5,7 @@ import Reveal from '../components/Reveal'
 
 export default function Divisions() {
   return (
-    <section id="divisions" className="bg-[#0a1622] py-24 sm:py-28">
+    <section id="divisions" className="bg-[#0a0a0b] py-24 sm:py-28">
       <div className="container-x">
         <SectionHeading
           eyebrow="Business Divisions"

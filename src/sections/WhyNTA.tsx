@@ -7,7 +7,7 @@ const icons = [Network, LineChart, Truck, ShieldCheck, Handshake]
 
 export default function WhyNTA() {
   return (
-    <section id="why" className="bg-[#0b1f3a] py-24 sm:py-28">
+    <section id="why" className="bg-[#111114] py-24 sm:py-28">
       <div className="container-x">
         <SectionHeading
           eyebrow="Why Choose NTA Group"
@@ -26,8 +26,8 @@ export default function WhyNTA() {
                       loading="lazy"
                       className="h-full w-full object-cover opacity-85"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0b1f3a] via-[#0b1f3a]/30 to-transparent" />
-                    <div className="absolute bottom-3 left-4 grid h-10 w-10 place-items-center rounded-xl border border-[#d4af37]/40 bg-[#0a1622]/70 text-[#d4af37] backdrop-blur">
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#111114] via-[#111114]/30 to-transparent" />
+                    <div className="absolute bottom-3 left-4 grid h-10 w-10 place-items-center rounded-xl border border-[#ff5a1f]/40 bg-[#0a0a0b]/70 text-[#ff5a1f] backdrop-blur">
                       <Icon className="h-5 w-5" />
                     </div>
                   </div>

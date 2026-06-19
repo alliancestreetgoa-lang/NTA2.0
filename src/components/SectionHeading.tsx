@@ -14,12 +14,12 @@ export default function SectionHeading({ eyebrow, title, intro, tone = 'dark', a
   const introColor = tone === 'dark' ? 'text-[#9aa6b3]' : 'text-[#56616b]'
   const alignment = align === 'center' ? 'mx-auto text-center items-center' : 'items-start'
   return (
-    <Reveal className={`flex max-w-2xl flex-col ${alignment}`}>
+    <Reveal className={`flex max-w-3xl flex-col ${alignment}`}>
       <p className="eyebrow mb-4">{eyebrow}</p>
-      <h2 className={`font-display text-3xl font-bold leading-tight tracking-tight text-balance sm:text-4xl ${titleColor}`}>
+      <h2 className={`font-display text-4xl font-extrabold uppercase leading-[0.95] tracking-[-0.035em] text-balance sm:text-5xl lg:text-[3.4rem] ${titleColor}`}>
         {title}
       </h2>
-      {intro && <p className={`mt-4 text-base leading-relaxed ${introColor}`}>{intro}</p>}
+      {intro && <p className={`mt-5 max-w-xl text-base leading-relaxed ${introColor}`}>{intro}</p>}
     </Reveal>
   )
 }

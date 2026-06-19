@@ -5,7 +5,7 @@
 :root { color-scheme: dark; }
 * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 html { scroll-behavior: smooth; }
-body { margin: 0; background: #0A1622; color: #F6F4EF; font-family: 'Inter', system-ui, sans-serif; }
+body { margin: 0; background: #0a0a0b; color: #F6F4EF; font-family: 'Inter', system-ui, sans-serif; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
 @layer components {

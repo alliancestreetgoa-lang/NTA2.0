@@ -17,10 +17,10 @@ export default function CTABand({
   to = '/#contact',
 }: Props) {
   return (
-    <section className="bg-[#0b1f3a]">
+    <section className="bg-[#111114]">
       <div className="container-x py-20">
-        <Reveal className="relative overflow-hidden rounded-3xl border border-[#d4af37]/25 bg-gradient-to-br from-[#13283f] to-[#0a1622] px-8 py-14 text-center sm:px-16">
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#d4af37] to-transparent" />
+        <Reveal className="relative overflow-hidden rounded-3xl border border-[#ff5a1f]/25 bg-gradient-to-br from-[#18181b] to-[#0a0a0b] px-8 py-14 text-center sm:px-16">
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#ff5a1f] to-transparent" />
           <h2 className="mx-auto max-w-2xl font-display text-3xl font-bold tracking-tight text-balance text-white sm:text-4xl">
             {title}
           </h2>

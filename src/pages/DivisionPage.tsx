@@ -16,20 +16,20 @@ export default function DivisionPage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[#0a1622] pb-16 pt-32 sm:pt-40">
-        <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-[#d4af37]/8 blur-3xl" />
+      <section className="relative overflow-hidden bg-[#0a0a0b] pb-16 pt-32 sm:pt-40">
+        <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-[#ff5a1f]/8 blur-3xl" />
         <div className="container-x relative">
           <Reveal>
             <Link
               to="/#divisions"
-              className="inline-flex items-center gap-2 text-sm font-medium text-[#9aa6b3] transition-colors hover:text-[#d4af37]"
+              className="inline-flex items-center gap-2 text-sm font-medium text-[#9aa6b3] transition-colors hover:text-[#ff5a1f]"
             >
               <ArrowLeft className="h-4 w-4" />
               All divisions
             </Link>
           </Reveal>
           <Reveal delay={0.06} className="mt-8 flex items-center gap-4">
-            <div className="grid h-14 w-14 place-items-center rounded-2xl border border-[#d4af37]/30 bg-[#13283f] text-[#d4af37]">
+            <div className="grid h-14 w-14 place-items-center rounded-2xl border border-[#ff5a1f]/30 bg-[#18181b] text-[#ff5a1f]">
               <Icon className="h-7 w-7" />
             </div>
             <p className="eyebrow">{division.tagline}</p>
@@ -46,7 +46,7 @@ export default function DivisionPage() {
       </section>
 
       {/* Detail lists */}
-      <section className="bg-[#0b1f3a] py-20">
+      <section className="bg-[#111114] py-20">
         <div className="container-x grid gap-8 lg:grid-cols-2">
           <Reveal>
             <DetailList title={division.tradeLabel} items={division.trade} />
@@ -69,11 +69,11 @@ function DetailList({ title, items }: { title: string; items: string[] }) {
   return (
     <div className="lg-card h-full p-7 sm:p-9">
       <h2 className="font-display text-xl font-semibold text-white">{title}</h2>
-      <div className="mt-5 h-px bg-gradient-to-r from-[#d4af37]/50 to-transparent" />
+      <div className="mt-5 h-px bg-gradient-to-r from-[#ff5a1f]/50 to-transparent" />
       <ul className="mt-6 grid gap-3 sm:grid-cols-2">
         {items.map((item) => (
           <li key={item} className="flex items-start gap-3 text-sm text-[#cdd5de]">
-            <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#d4af37]" />
+            <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#ff5a1f]" />
             {item}
           </li>
         ))}

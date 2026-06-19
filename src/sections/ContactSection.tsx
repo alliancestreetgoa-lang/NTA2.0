@@ -6,7 +6,7 @@ import Reveal from '../components/Reveal'
 
 export default function ContactSection() {
   return (
-    <section id="contact" className="bg-[#0a1622] py-24 sm:py-28">
+    <section id="contact" className="bg-[#0a0a0b] py-24 sm:py-28">
       <div className="container-x grid gap-12 lg:grid-cols-2">
         <div>
           <SectionHeading
@@ -16,7 +16,7 @@ export default function ContactSection() {
           />
           <Reveal className="mt-10 space-y-5">
             <ContactItem icon={Mail} label="Email">
-              <a href={`mailto:${company.email}`} className="hover:text-[#d4af37]">
+              <a href={`mailto:${company.email}`} className="hover:text-[#ff5a1f]">
                 {company.email}
               </a>
             </ContactItem>
@@ -51,7 +51,7 @@ function ContactItem({
 }) {
   return (
     <div className="flex items-start gap-4">
-      <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-[#d4af37]/30 bg-[#13283f] text-[#d4af37]">
+      <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-[#ff5a1f]/30 bg-[#18181b] text-[#ff5a1f]">
         <Icon className="h-5 w-5" />
       </div>
       <div>

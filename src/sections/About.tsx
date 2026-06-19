@@ -3,7 +3,7 @@ import Reveal from '../components/Reveal'
 
 export default function About() {
   return (
-    <section id="about" className="bg-[#0b1f3a] py-24 sm:py-28">
+    <section id="about" className="bg-[#111114] py-24 sm:py-28">
       <div className="container-x grid items-center gap-14 lg:grid-cols-2">
         <div>
           <Reveal>

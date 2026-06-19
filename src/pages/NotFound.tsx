@@ -3,7 +3,7 @@ import { ArrowLeft } from 'lucide-react'
 
 export default function NotFound() {
   return (
-    <section className="flex min-h-[70vh] items-center bg-[#0a1622]">
+    <section className="flex min-h-[70vh] items-center bg-[#0a0a0b]">
       <div className="container-x text-center">
         <p className="eyebrow justify-center">Error 404</p>
         <h1 className="mt-4 font-display text-5xl font-bold text-white sm:text-7xl">

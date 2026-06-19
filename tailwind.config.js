@@ -4,9 +4,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        navy: { 900: '#0A1622', 800: '#0B1F3A', 700: '#13283F' },
+        navy: { 900: '#0a0a0b', 800: '#111114', 700: '#18181b' },
         steel: '#6B7280',
-        gold: { DEFAULT: '#D4AF37', soft: '#E0C074' },
+        gold: { DEFAULT: '#ff5a1f', soft: '#ff7a45' },
         paper: '#F6F4EF',
         ink: { 900: '#101820', 500: '#56616B' },
       },

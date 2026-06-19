@@ -7,10 +7,10 @@ import { useScrolled } from '../hooks/useScrolled'
 function Logo() {
   return (
     <span className="flex items-center gap-2.5 font-display text-lg font-bold tracking-tight text-white">
-      <span className="grid h-8 w-8 place-items-center rounded-sm bg-[#d4af37] font-display text-sm font-extrabold text-[#0a1622]">
+      <span className="grid h-8 w-8 place-items-center rounded-sm bg-[#ff5a1f] font-display text-sm font-extrabold text-[#0a0a0b]">
         N
       </span>
-      NTA<span className="text-[#d4af37]">Group</span>
+      NTA<span className="text-[#ff5a1f]">Group</span>
     </span>
   )
 }
@@ -56,7 +56,7 @@ export default function Header() {
                 onMouseLeave={() => setDivOpen(false)}
               >
                 <button
-                  className="flex items-center gap-1 text-sm font-medium text-white/85 transition-colors hover:text-[#d4af37]"
+                  className="flex items-center gap-1 text-sm font-medium text-white/85 transition-colors hover:text-[#ff5a1f]"
                   onClick={() => goToAnchor(item.href)}
                 >
                   {item.label}
@@ -72,7 +72,7 @@ export default function Header() {
                           className="flex items-start gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-white/5"
                           onClick={() => setDivOpen(false)}
                         >
-                          <d.icon className="mt-0.5 h-4 w-4 shrink-0 text-[#d4af37]" />
+                          <d.icon className="mt-0.5 h-4 w-4 shrink-0 text-[#ff5a1f]" />
                           <span className="text-sm font-medium text-white/90">{d.name}</span>
                         </Link>
                       ))}
@@ -84,7 +84,7 @@ export default function Header() {
               <Link
                 key={item.label}
                 to={item.href}
-                className="text-sm font-medium text-white/85 transition-colors hover:text-[#d4af37]"
+                className="text-sm font-medium text-white/85 transition-colors hover:text-[#ff5a1f]"
               >
                 {item.label}
               </Link>
@@ -92,7 +92,7 @@ export default function Header() {
               <button
                 key={item.label}
                 onClick={() => goToAnchor(item.href)}
-                className="text-sm font-medium text-white/85 transition-colors hover:text-[#d4af37]"
+                className="text-sm font-medium text-white/85 transition-colors hover:text-[#ff5a1f]"
               >
                 {item.label}
               </button>
@@ -147,7 +147,7 @@ export default function Header() {
                 onClick={() => setOpen(false)}
                 className="flex items-center gap-2 py-2 text-sm text-white/70"
               >
-                <d.icon className="h-4 w-4 text-[#d4af37]" />
+                <d.icon className="h-4 w-4 text-[#ff5a1f]" />
                 {d.name}
               </Link>
             ))}

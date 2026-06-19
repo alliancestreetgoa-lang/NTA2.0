@@ -34,12 +34,12 @@ export default function WorldMap() {
       <defs>
         <radialGradient id="mapGlow" cx="50%" cy="45%" r="60%">
           <stop offset="0%" stopColor="#15314c" />
-          <stop offset="100%" stopColor="#0a1622" />
+          <stop offset="100%" stopColor="#0a0a0b" />
         </radialGradient>
         <linearGradient id="arc" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#d4af37" stopOpacity="0" />
-          <stop offset="50%" stopColor="#e0c074" stopOpacity="0.85" />
-          <stop offset="100%" stopColor="#d4af37" stopOpacity="0" />
+          <stop offset="0%" stopColor="#ff5a1f" stopOpacity="0" />
+          <stop offset="50%" stopColor="#ff7a45" stopOpacity="0.85" />
+          <stop offset="100%" stopColor="#ff5a1f" stopOpacity="0" />
         </linearGradient>
       </defs>
 
@@ -70,8 +70,8 @@ export default function WorldMap() {
           const p = toPx(m.x, m.y)
           return (
             <g key={m.name} className="animate-pulse-node" style={{ transformOrigin: `${p.x}px ${p.y}px` }}>
-              <circle cx={p.x} cy={p.y} r={m.hub ? 9 : 6} fill="#d4af37" opacity="0.2" />
-              <circle cx={p.x} cy={p.y} r={m.hub ? 4 : 3} fill={m.hub ? '#e0c074' : '#d4af37'} />
+              <circle cx={p.x} cy={p.y} r={m.hub ? 9 : 6} fill="#ff5a1f" opacity="0.2" />
+              <circle cx={p.x} cy={p.y} r={m.hub ? 4 : 3} fill={m.hub ? '#ff7a45' : '#ff5a1f'} />
             </g>
           )
         })}

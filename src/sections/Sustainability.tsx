@@ -9,10 +9,10 @@ export default function Sustainability() {
   return (
     <section
       id="sustainability"
-      className="relative overflow-hidden bg-[#0b1f3a] py-24 sm:py-28"
+      className="relative overflow-hidden bg-[#111114] py-24 sm:py-28"
     >
       {/* soft gold glow accent */}
-      <div className="pointer-events-none absolute -right-32 top-0 h-96 w-96 rounded-full bg-[#d4af37]/8 blur-3xl" />
+      <div className="pointer-events-none absolute -right-32 top-0 h-96 w-96 rounded-full bg-[#ff5a1f]/8 blur-3xl" />
       <div className="container-x relative">
         <SectionHeading
           eyebrow={sustainability.eyebrow}
@@ -32,8 +32,8 @@ export default function Sustainability() {
                       loading="lazy"
                       className="h-full w-full object-cover opacity-85"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0b1f3a] via-[#0b1f3a]/25 to-transparent" />
-                    <div className="absolute bottom-3 left-4 grid h-10 w-10 place-items-center rounded-xl border border-[#d4af37]/40 bg-[#0a1622]/70 text-[#d4af37] backdrop-blur">
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#111114] via-[#111114]/25 to-transparent" />
+                    <div className="absolute bottom-3 left-4 grid h-10 w-10 place-items-center rounded-xl border border-[#ff5a1f]/40 bg-[#0a0a0b]/70 text-[#ff5a1f] backdrop-blur">
                       <Icon className="h-5 w-5" />
                     </div>
                   </div>
