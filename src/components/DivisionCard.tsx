@@ -7,7 +7,7 @@ export default function DivisionCard({ division }: { division: Division }) {
   return (
     <Link
       to={`/divisions/${division.slug}`}
-      className="lg-card lg-card-hover group relative flex flex-col p-7"
+      className="lg-card lg-card-hover group relative flex h-full flex-col p-7"
     >
       {/* Background topic image + legibility overlay (does not affect card size) */}
       <img
