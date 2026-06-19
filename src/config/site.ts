@@ -16,7 +16,7 @@ const img = (id: string) => `${U}${id}?auto=format&fit=crop&w=800&q=70`
 const divisionImages: Record<string, string> = {
   fertilizers: img('1500382017468-9049fed747ef'), // green agricultural field
   grains: img('1574323347407-f5e1ad6d020b'), // wheat
-  petrochemicals: img('1518709268805-4e9042af9f23'), // refinery / chemical plant
+  petrochemicals: img('1584060330377-3fd93ef4e991'), // petrochemical plant — distillation column + pipework
   'crude-oil': img('1598114335556-119dbed6b051'), // oil pumpjack in a field
   'refined-oil': img('1588011930968-eadac80e6a5a'), // oil refinery towers at dusk
   lng: '/images/lng-terminal.jpg', // LNG carrier at terminal (local asset)
