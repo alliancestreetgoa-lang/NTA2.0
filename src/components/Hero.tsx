@@ -1,6 +1,9 @@
+import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import { hero } from '../config/site'
+import { usePrefersReducedMotion } from '../hooks/useReducedMotion'
 import TradeGlobe from './TradeGlobe'
 
 const TICKER = [
@@ -13,29 +16,40 @@ const TICKER = [
  * headline pinned low-left, and a scrolling mono commodity ticker at the bottom.
  */
 export default function Hero() {
+  const reduced = usePrefersReducedMotion()
+  const ref = useRef<HTMLElement>(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
+  // Headline drifts up and fades as the hero scrolls away; the globe drifts slower (depth).
+  const textY = useTransform(scrollYProgress, [0, 1], [0, -90])
+  const textOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0])
+  const globeY = useTransform(scrollYProgress, [0, 1], [0, 120])
+  const motionText = reduced ? undefined : { y: textY, opacity: textOpacity }
+  const motionGlobe = reduced ? undefined : { y: globeY }
+
   return (
     <section
+      ref={ref}
       id="top"
       className="relative flex min-h-[100svh] flex-col overflow-hidden bg-[#0a0a0b] text-white"
     >
       {/* Trade globe */}
-      <div className="absolute inset-0 overflow-hidden">
+      <motion.div style={motionGlobe} className="absolute inset-0 overflow-hidden">
         <div className="pointer-events-none absolute right-[-8%] top-[-12%] h-[620px] w-[620px] rounded-full bg-[#ff5a1f]/12 blur-[140px]" />
         <TradeGlobe className="absolute right-[-110px] top-1/2 h-[420px] w-[420px] -translate-y-1/2 sm:right-[-90px] sm:h-[620px] sm:w-[620px] lg:h-[820px] lg:w-[820px]" />
         {/* legibility overlays */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0a0a0b] via-[#0a0a0b]/45 to-transparent" />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0a0b] via-transparent to-[#0a0a0b]/20" />
-      </div>
+      </motion.div>
 
       {/* Top-left kicker */}
-      <div className="container-x relative z-10 pt-28">
+      <motion.div style={motionText} className="container-x relative z-10 pt-28">
         <p className="eyebrow">/ EST. 2014 — UAE — GLOBAL COMMODITY TRADING</p>
-      </div>
+      </motion.div>
 
       <div className="flex-1" />
 
       {/* Headline pinned low-left */}
-      <div className="container-x relative z-10 pb-9">
+      <motion.div style={motionText} className="container-x relative z-10 pb-9">
         <h1 className="font-display max-w-4xl text-4xl font-extrabold uppercase leading-[0.92] tracking-[-0.04em] text-balance sm:text-6xl sm:leading-[0.9] lg:text-7xl">
           <span className="text-white">Powering Global Trade Through </span>
           <span className="text-[#ff5a1f]">Energy &amp; Agri Commodities</span>
@@ -52,7 +66,7 @@ export default function Hero() {
             {hero.secondaryCta.label}
           </a>
         </div>
-      </div>
+      </motion.div>
 
       {/* Bottom ticker bar */}
       <div

@@ -9,7 +9,7 @@ function Logo() {
     <img
       src={`${import.meta.env.BASE_URL}images/logo-mark.png`}
       alt="NTA Group"
-      className="h-9 w-auto sm:h-10"
+      className="h-12 w-auto contrast-[1.08] brightness-110 drop-shadow-[0_2px_10px_rgba(255,90,31,0.35)] sm:h-14"
     />
   )
 }

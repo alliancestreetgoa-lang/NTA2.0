@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import { ArrowLeft, ArrowUpRight } from 'lucide-react'
 import { divisions, type Division } from '../config/site'
 import Reveal from '../components/Reveal'
+import ScrollProgress from '../components/ScrollProgress'
+import CountUp from '../components/CountUp'
 import '../styles/commodities.css'
 
 // Order requested by the client — Chemical Fertilizers leads as the hero product.
@@ -41,6 +43,7 @@ export default function CommoditiesPage() {
 
   return (
     <div className="cm">
+      <ScrollProgress />
       {/* Masthead */}
       <header className="cm-top">
         <div className="cm-wrap cm-top-inner">
@@ -97,7 +100,7 @@ export default function CommoditiesPage() {
           <div className="cm-stats cm-rise cm-d4">
             {HERO_STATS.map((s) => (
               <div className="cm-stat" key={s.l}>
-                <b className="cm-serif">{s.v}</b>
+                <b className="cm-serif"><CountUp value={s.v} /></b>
                 <span>{s.l}</span>
               </div>
             ))}

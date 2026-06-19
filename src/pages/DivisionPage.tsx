@@ -2,6 +2,7 @@ import { useParams, Link, Navigate } from 'react-router-dom'
 import { ArrowLeft, Check } from 'lucide-react'
 import { divisionBySlug } from '../config/site'
 import Reveal from '../components/Reveal'
+import ParallaxImage from '../components/ParallaxImage'
 import CTABand from '../components/CTABand'
 
 /** Data-driven division detail page — one component renders all four divisions. */
@@ -17,12 +18,7 @@ export default function DivisionPage() {
     <>
       {/* Hero with full-screen topic image */}
       <section className="relative flex min-h-[100svh] items-center overflow-hidden bg-[#0a0a0b] pb-16 pt-28 sm:pt-32">
-        <img
-          src={division.image}
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover opacity-95"
-        />
+        <ParallaxImage src={division.image} className="opacity-95" strength={70} />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0a0a0b] via-[#0a0a0b]/55 to-[#0a0a0b]/5" />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0a0b] via-transparent to-[#0a0a0b]/25" />
         <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-[#ff5a1f]/10 blur-3xl" />

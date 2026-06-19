@@ -11,7 +11,7 @@ export default function Footer() {
           <img
             src={`${import.meta.env.BASE_URL}images/logo-mark.png`}
             alt="NTA Group"
-            className="h-11 w-auto"
+            className="h-14 w-auto contrast-[1.08] brightness-110 drop-shadow-[0_2px_10px_rgba(255,90,31,0.35)]"
           />
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-[#8b97a5]">
             {company.tagline}. A global trading house bridging producers and markets across energy

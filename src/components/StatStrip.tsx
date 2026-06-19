@@ -1,5 +1,6 @@
 import { stats } from '../config/site'
 import Reveal from './Reveal'
+import CountUp from './CountUp'
 
 export default function StatStrip() {
   return (
@@ -11,7 +12,7 @@ export default function StatStrip() {
           className="px-6 py-8 text-center"
         >
           <div className="font-display text-3xl font-bold tabular-nums text-[#ff5a1f] sm:text-4xl">
-            {s.value}
+            <CountUp value={s.value} />
           </div>
           <div className="mt-2 text-xs font-medium uppercase tracking-[0.16em] text-[#8b97a5]">
             {s.label}
