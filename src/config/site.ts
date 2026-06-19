@@ -19,7 +19,7 @@ const divisionImages: Record<string, string> = {
   petrochemicals: img('1518709268805-4e9042af9f23'), // refinery / chemical plant
   'crude-oil': img('1532187863486-abf9dbad1b69'), // oil / industrial
   'refined-oil': img('1519003722824-194d4455a60c'), // fuel
-  lng: img('1610552050890-fe99536c2615'), // gas / pipes
+  lng: img('1578575437130-527eed3abbec'), // industrial port / shipping terminal
 }
 
 const iconMap: Record<string, LucideIcon> = {
