@@ -46,7 +46,7 @@ export default function Header() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden items-center gap-7 lg:flex">
+        <nav className="hidden items-center gap-7 xl:flex">
           {nav.map((item) =>
             item.label === 'Divisions' ? (
               <div
@@ -100,14 +100,14 @@ export default function Header() {
           )}
         </nav>
 
-        <button onClick={() => goToAnchor('#contact')} className="btn-gold hidden text-sm lg:inline-flex">
+        <button onClick={() => goToAnchor('#contact')} className="btn-gold hidden text-sm xl:inline-flex">
           Get in touch
           <ArrowRight className="h-4 w-4" />
         </button>
 
         {/* Mobile toggle */}
         <button
-          className="text-white lg:hidden"
+          className="text-white xl:hidden"
           aria-label={open ? 'Close menu' : 'Open menu'}
           onClick={() => setOpen((v) => !v)}
         >
@@ -117,7 +117,7 @@ export default function Header() {
 
       {/* Mobile menu */}
       {open && (
-        <div className="glass mt-3 lg:hidden">
+        <div className="glass mt-3 xl:hidden">
           <nav className="container-x flex flex-col gap-1 py-4">
             {nav.map((item) =>
               item.href.startsWith('/') ? (

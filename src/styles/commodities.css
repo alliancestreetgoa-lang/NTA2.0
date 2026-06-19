@@ -97,6 +97,9 @@
   transition: border-color 0.2s, color 0.2s;
 }
 .cm-back:hover { border-color: var(--gold); color: var(--gold); }
+@media (max-width: 640px) {
+  .cm-top .cm-meta { display: none; }
+}
 
 /* ---- Ticker ---- */
 .cm-ticker {

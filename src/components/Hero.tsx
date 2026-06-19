@@ -21,7 +21,7 @@ export default function Hero() {
       {/* Trade globe */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="pointer-events-none absolute right-[-8%] top-[-12%] h-[620px] w-[620px] rounded-full bg-[#ff5a1f]/12 blur-[140px]" />
-        <TradeGlobe className="absolute right-[-160px] top-1/2 h-[820px] w-[820px] -translate-y-1/2 sm:right-[-90px]" />
+        <TradeGlobe className="absolute right-[-110px] top-1/2 h-[420px] w-[420px] -translate-y-1/2 sm:right-[-90px] sm:h-[620px] sm:w-[620px] lg:h-[820px] lg:w-[820px]" />
         {/* legibility overlays */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0a0a0b] via-[#0a0a0b]/45 to-transparent" />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0a0b] via-transparent to-[#0a0a0b]/20" />
@@ -36,7 +36,7 @@ export default function Hero() {
 
       {/* Headline pinned low-left */}
       <div className="container-x relative z-10 pb-9">
-        <h1 className="font-display max-w-4xl text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.04em] text-balance sm:text-6xl lg:text-7xl">
+        <h1 className="font-display max-w-4xl text-4xl font-extrabold uppercase leading-[0.92] tracking-[-0.04em] text-balance sm:text-6xl sm:leading-[0.9] lg:text-7xl">
           <span className="text-white">Powering Global Trade Through </span>
           <span className="text-[#ff5a1f]">Energy &amp; Agri Commodities</span>
         </h1>
