@@ -15,10 +15,18 @@ export default function DivisionPage() {
 
   return (
     <>
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-[#0a0a0b] pb-16 pt-32 sm:pt-40">
-        <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-[#ff5a1f]/8 blur-3xl" />
-        <div className="container-x relative">
+      {/* Hero with full-screen topic image */}
+      <section className="relative flex min-h-[88vh] items-center overflow-hidden bg-[#0a0a0b] pb-16 pt-32 sm:pt-40">
+        <img
+          src={division.image}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover opacity-45"
+        />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0a0a0b] via-[#0a0a0b]/82 to-[#0a0a0b]/45" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0a0b] via-transparent to-[#0a0a0b]/55" />
+        <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-[#ff5a1f]/10 blur-3xl" />
+        <div className="container-x relative z-10">
           <Reveal>
             <Link
               to="/#divisions"
