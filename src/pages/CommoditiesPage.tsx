@@ -8,12 +8,12 @@ import '../styles/commodities.css'
 // Order requested by the client — Chemical Fertilizers leads as the hero product.
 const ORDER = ['fertilizers', 'lng', 'refined-oil', 'crude-oil', 'petrochemicals', 'grains']
 const ACCENT: Record<string, string> = {
-  fertilizers: '#4a6b3f',
-  lng: '#2b6f8c',
-  'refined-oil': '#b5732a',
-  'crude-oil': '#3a3530',
-  petrochemicals: '#7a5c9e',
-  grains: '#a8761c',
+  fertilizers: '#ff5a1f',
+  lng: '#4da3ff',
+  'refined-oil': '#ff9f1c',
+  'crude-oil': '#aeb4bd',
+  petrochemicals: '#b98bff',
+  grains: '#e6c34a',
 }
 
 const bySlug = Object.fromEntries(divisions.map((d) => [d.slug, d])) as Record<string, Division>
