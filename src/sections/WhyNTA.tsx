@@ -18,7 +18,7 @@ export default function WhyNTA() {
           {whyChoose.map((item, i) => {
             const Icon = icons[i % icons.length]
             return (
-              <Reveal key={item.title} delay={i * 0.08}>
+              <Reveal key={item.title} delay={i * 0.08} direction="up">
                 <div className="lg-card lg-card-hover group relative flex h-full min-h-[300px] flex-col overflow-hidden">
                   {/* Full-bleed background image + legibility gradient */}
                   <img

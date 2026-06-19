@@ -15,7 +15,7 @@ export default function Divisions() {
         />
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {divisions.map((d, i) => (
-            <Reveal key={d.slug} delay={i * 0.09}>
+            <Reveal key={d.slug} delay={i * 0.09} direction="zoom">
               <DivisionCard division={d} />
             </Reveal>
           ))}

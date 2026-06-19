@@ -6,7 +6,7 @@ export default function About() {
     <section id="about" className="bg-[#111114] py-24 sm:py-28">
       <div className="container-x grid items-center gap-14 lg:grid-cols-2">
         <div>
-          <Reveal>
+          <Reveal direction="right">
             <p className="eyebrow mb-4">{about.eyebrow}</p>
             <h2 className="font-display text-3xl font-bold leading-tight tracking-tight text-balance text-white sm:text-4xl">
               {about.heading}
@@ -15,7 +15,7 @@ export default function About() {
         </div>
         <div className="space-y-5">
           {about.paragraphs.map((p, i) => (
-            <Reveal key={i} delay={i * 0.09}>
+            <Reveal key={i} delay={i * 0.09} direction="left">
               <p className="text-base leading-relaxed text-[#aab4c0]">{p}</p>
             </Reveal>
           ))}

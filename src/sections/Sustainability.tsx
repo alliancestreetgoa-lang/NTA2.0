@@ -24,7 +24,7 @@ export default function Sustainability() {
           {sustainability.pillars.map((p, i) => {
             const Icon = icons[i % icons.length]
             return (
-              <Reveal key={p.title} delay={i * 0.09}>
+              <Reveal key={p.title} delay={i * 0.09} direction="zoom">
                 <div className="lg-card lg-card-hover group relative flex h-full min-h-[300px] flex-col overflow-hidden">
                   {/* Full-bleed background image + legibility gradient */}
                   <img
