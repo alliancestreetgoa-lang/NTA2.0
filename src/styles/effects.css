@@ -168,37 +168,131 @@
   top: 0;
   height: 52%;
   border-radius: inherit;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0));
   pointer-events: none;
+  z-index: 1;
+}
+/* Shiny dark liquid-glass pill (used on light/orange backgrounds). */
+.btn-glass-dark {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 42%),
+    linear-gradient(180deg, rgba(28, 28, 32, 0.92), rgba(10, 10, 11, 0.96)) !important;
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -10px 20px -12px rgba(0, 0, 0, 0.7),
+    0 12px 32px -12px rgba(0, 0, 0, 0.55) !important;
+}
+.btn-glass-dark::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 50%;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0));
+  pointer-events: none;
+  z-index: 1;
+}
+.btn-glass-dark:hover {
+  filter: brightness(1.1);
+}
+
+/* travelling glint — a diagonal light streak that sweeps across the surface */
+.btn-gold::before,
+.btn-ghost::before,
+.btn-glass-dark::before {
+  content: '';
+  position: absolute;
+  top: -60%;
+  left: -75%;
+  width: 50%;
+  height: 220%;
+  transform: rotate(22deg);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  filter: blur(2px);
+  pointer-events: none;
+  z-index: 2;
+  animation: btn-shine 4.5s ease-in-out infinite;
+}
+.btn-gold:hover::before,
+.btn-ghost:hover::before,
+.btn-glass-dark:hover::before {
+  animation-duration: 1.4s;
+}
+@keyframes btn-shine {
+  0% {
+    left: -75%;
+  }
+  /* sweep across quickly, then rest off-screen for the rest of the cycle */
+  22%,
+  100% {
+    left: 130%;
+  }
+}
+/* keep button label/icon above the gloss + glint layers */
+.btn-gold > *,
+.btn-ghost > *,
+.btn-glass-dark > * {
+  position: relative;
+  z-index: 3;
 }
 .btn-gold:hover {
-  filter: brightness(1.06);
+  filter: brightness(1.08);
   transform: translateY(-1px);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 1px 0 rgba(255, 255, 255, 1),
     inset 0 -12px 22px -12px rgba(120, 40, 0, 0.5),
-    0 16px 40px -12px rgba(255, 90, 31, 0.72) !important;
+    0 16px 44px -12px rgba(255, 90, 31, 0.78) !important;
 }
 
 .btn-ghost {
   position: relative;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.06) !important;
-  backdrop-filter: blur(12px) saturate(140%);
-  -webkit-backdrop-filter: blur(12px) saturate(140%);
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 45%),
+    rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.24) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 8px 24px -14px rgba(0, 0, 0, 0.6) !important;
 }
 .btn-ghost::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0) 50%);
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 50%);
   pointer-events: none;
+  z-index: 1;
 }
 .btn-ghost:hover {
   border-color: rgba(255, 90, 31, 0.5) !important;
-  background: rgba(255, 255, 255, 0.1) !important;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 45%),
+    rgba(255, 255, 255, 0.1) !important;
+  transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-gold::before,
+  .btn-ghost::before,
+  .btn-glass-dark::before {
+    animation: none;
+    opacity: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

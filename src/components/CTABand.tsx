@@ -27,7 +27,7 @@ export default function CTABand({
           <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-[#0a0a0b]/75">{subtitle}</p>
           <Link
             to={to}
-            className="mt-9 inline-flex items-center gap-2 rounded-full bg-[#0a0a0b] px-7 py-3.5 text-sm font-semibold text-[#ff5a1f] transition-transform duration-300 hover:-translate-y-0.5"
+            className="btn-glass-dark mt-9 inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold text-[#ff5a1f] transition-transform duration-300 hover:-translate-y-0.5"
           >
             {ctaLabel}
             <ArrowUpRight className="h-4 w-4" />
