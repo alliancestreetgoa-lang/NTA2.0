@@ -19,22 +19,24 @@ export default function WhyNTA() {
             const Icon = icons[i % icons.length]
             return (
               <Reveal key={item.title} delay={i * 0.08}>
-                <div className="lg-card lg-card-hover flex h-full flex-col">
-                  <div className="relative h-36 overflow-hidden">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      loading="lazy"
-                      className="h-full w-full object-cover opacity-85"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#111114] via-[#111114]/30 to-transparent" />
-                    <div className="absolute bottom-3 left-4 grid h-10 w-10 place-items-center rounded-xl border border-[#ff5a1f]/40 bg-[#0a0a0b]/70 text-[#ff5a1f] backdrop-blur">
+                <div className="lg-card lg-card-hover group relative flex h-full min-h-[300px] flex-col overflow-hidden">
+                  {/* Full-bleed background image + legibility gradient */}
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full object-cover opacity-80 transition-opacity duration-500 group-hover:opacity-95"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0b] via-[#0a0a0b]/55 to-[#0a0a0b]/10" />
+
+                  <div className="relative z-10 flex flex-1 flex-col p-6">
+                    <div className="grid h-11 w-11 place-items-center rounded-xl border border-[#ff5a1f]/40 bg-[#0a0a0b]/70 text-[#ff5a1f] backdrop-blur">
                       <Icon className="h-5 w-5" />
                     </div>
-                  </div>
-                  <div className="flex flex-1 flex-col p-6">
-                    <h3 className="font-display text-base font-semibold text-white">{item.title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-[#9aa6b3]">{item.body}</p>
+                    <div className="mt-auto pt-8">
+                      <h3 className="font-display text-base font-semibold text-white">{item.title}</h3>
+                      <p className="mt-2 text-sm leading-relaxed text-[#c2ccd6]">{item.body}</p>
+                    </div>
                   </div>
                 </div>
               </Reveal>
