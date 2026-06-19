@@ -15,9 +15,9 @@ export default function DivisionCard({ division }: { division: Division }) {
         alt=""
         aria-hidden="true"
         loading="lazy"
-        className="absolute inset-0 h-full w-full object-cover opacity-40 transition-opacity duration-500 group-hover:opacity-55"
+        className="absolute inset-0 h-full w-full object-cover opacity-75 transition-opacity duration-500 group-hover:opacity-90"
       />
-      <div className="absolute inset-0 bg-gradient-to-tr from-[#111114] via-[#111114]/80 to-[#111114]/40" />
+      <div className="absolute inset-0 bg-gradient-to-tr from-[#111114] via-[#111114]/65 to-[#111114]/20" />
 
       <div className="relative z-10 flex flex-1 flex-col">
         <div className="mb-5 grid h-12 w-12 place-items-center rounded-xl border border-[#ff5a1f]/30 bg-[#0a0a0b]/80 text-[#ff5a1f] backdrop-blur">
