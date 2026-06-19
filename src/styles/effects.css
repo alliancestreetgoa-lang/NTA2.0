@@ -70,6 +70,23 @@
 }
 
 /* ============================================================
+   Cosmic glow (spark) button animations
+   ============================================================ */
+@keyframes glow-scale {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50% { transform: scale(1.15); opacity: 0.7; }
+}
+@keyframes glow-slide {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.animate-glow-scale { animation: glow-scale 5s ease-in-out infinite; }
+.animate-glow-slide { animation: glow-slide 5s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .animate-glow-scale, .animate-glow-slide { animation: none; }
+}
+
+/* ============================================================
    Liquid-glass finish — cards & buttons
    ============================================================ */
 
@@ -125,29 +142,47 @@
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
 }
 
-/* Liquid-glass buttons (override index.css). */
+/* Cosmic-glow button — applied to every .btn-gold across the site.
+   Dark gradient base with a pulsing radial glow + rotating conic sweep. */
 .btn-gold {
   position: relative;
+  isolation: isolate;
   overflow: hidden;
-  background: linear-gradient(135deg, #ff8a55 0%, #ff5a1f 55%, #d6480f 100%) !important;
-  color: #0a0a0b !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.55),
-    inset 0 -2px 6px rgba(120, 90, 10, 0.35),
-    0 10px 28px -10px rgba(255, 90, 31, 0.55) !important;
+  background: linear-gradient(90deg, #161618 0%, #232327 50%, #161618 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 12px 34px -14px rgba(0, 0, 0, 0.7) !important;
+  transition: filter 0.3s ease, transform 0.3s ease !important;
+}
+.btn-gold::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(circle at center, #ff7a45 8%, transparent 60%);
+  filter: blur(12px);
+  opacity: 0.5;
+  animation: glow-scale 5s ease-in-out infinite;
+  pointer-events: none;
 }
 .btn-gold::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 48%);
+  z-index: -1;
+  border-radius: inherit;
+  background: conic-gradient(from 90deg at 50% 50%, transparent 0deg, #ff5a1f 120deg, transparent 240deg);
+  opacity: 0.3;
+  animation: glow-slide 5s linear infinite;
   pointer-events: none;
 }
 .btn-gold:hover {
-  filter: brightness(1.05);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.6),
-    0 14px 36px -10px rgba(255, 90, 31, 0.7) !important;
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+.btn-gold:hover::before { opacity: 0.78; }
+@media (prefers-reduced-motion: reduce) {
+  .btn-gold::before, .btn-gold::after { animation: none; }
 }
 
 .btn-ghost {
