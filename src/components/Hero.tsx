@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import { hero } from '../config/site'
-import Globe from './ui/globe'
+import TradeGlobe from './TradeGlobe'
 
 const TICKER = [
   'UREA', 'DAP', 'NPK', 'POTASH (MOP)', 'AMMONIA', 'LNG', 'NATURAL GAS', 'GASOIL',
@@ -18,17 +18,13 @@ export default function Hero() {
       id="top"
       className="relative flex min-h-[100svh] flex-col overflow-hidden bg-[#0a0a0b] text-white"
     >
-      {/* Background globe */}
+      {/* Trade globe */}
       <div className="absolute inset-0 overflow-hidden">
-        {/* warm glow to tie the blue earth into the orange theme */}
-        <div className="absolute right-[-60px] top-1/2 h-[680px] w-[680px] -translate-y-1/2 rounded-full bg-[#ff5a1f]/12 blur-[120px]" />
-        <Globe
-          size={780}
-          className="absolute right-[-150px] top-1/2 -translate-y-1/2 sm:right-[-90px]"
-        />
-        {/* Legibility overlays: darker at the bottom and left */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0a0b] via-[#0a0a0b]/10 to-[#0a0a0b]/20" />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0a0a0b] via-[#0a0a0b]/55 to-transparent" />
+        <div className="pointer-events-none absolute right-[-8%] top-[-12%] h-[620px] w-[620px] rounded-full bg-[#ff5a1f]/12 blur-[140px]" />
+        <TradeGlobe className="absolute right-[-160px] top-1/2 h-[820px] w-[820px] -translate-y-1/2 sm:right-[-90px]" />
+        {/* legibility overlays */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0a0a0b] via-[#0a0a0b]/45 to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0a0b] via-transparent to-[#0a0a0b]/20" />
       </div>
 
       {/* Top-left kicker */}
