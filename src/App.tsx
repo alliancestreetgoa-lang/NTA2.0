@@ -7,7 +7,7 @@ import NotFound from './pages/NotFound'
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Routes>
         {/* Standalone art-directed page — its own masthead, outside the dark shell */}
         <Route path="/commodities" element={<CommoditiesPage />} />

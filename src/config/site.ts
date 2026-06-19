@@ -12,14 +12,18 @@ import { company as raw, divisions as rawDivisions } from './company'
 const U = 'https://images.unsplash.com/photo-'
 const img = (id: string) => `${U}${id}?auto=format&fit=crop&w=800&q=70`
 
+// Prefix public assets with the Vite base URL so they resolve under a sub-path
+// deploy (e.g. GitHub Pages /NTA2.0/) as well as at root in dev.
+const asset = (p: string) => `${import.meta.env.BASE_URL}${p}`
+
 // Topic image per division (background imagery on the cards / detail heroes).
 const divisionImages: Record<string, string> = {
-  fertilizers: '/images/fertilizers-field.png', // tractor spraying a crop field (local asset)
-  grains: '/images/grains.png', // grains, cereals & legumes assortment (local asset)
-  petrochemicals: '/images/petrochemicals.png', // petrochemical plant at night (local asset)
-  'crude-oil': '/images/crude-oil.png', // crude oil barrels, tanker & pumpjacks at sunset (local asset)
-  'refined-oil': '/images/refined-oil.png', // refined fuel storage tank farm at dusk (local asset)
-  lng: '/images/lng-tanks.webp', // LNG storage spheres plant (local asset)
+  fertilizers: asset('images/fertilizers-field.png'), // tractor spraying a crop field (local asset)
+  grains: asset('images/grains.png'), // grains, cereals & legumes assortment (local asset)
+  petrochemicals: asset('images/petrochemicals.png'), // petrochemical plant at night (local asset)
+  'crude-oil': asset('images/crude-oil.png'), // crude oil barrels, tanker & pumpjacks at sunset (local asset)
+  'refined-oil': asset('images/refined-oil.png'), // refined fuel storage tank farm at dusk (local asset)
+  lng: asset('images/lng-tanks.webp'), // LNG storage spheres plant (local asset)
 }
 
 const iconMap: Record<string, LucideIcon> = {
