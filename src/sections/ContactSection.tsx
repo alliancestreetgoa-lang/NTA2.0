@@ -10,6 +10,7 @@ export default function ContactSection() {
       <div className="container-x grid gap-12 lg:grid-cols-2">
         <div>
           <SectionHeading
+            index="05"
             eyebrow="Contact Us"
             title="Talk to our trading team."
             intro="Tell us about your sourcing, supply, or offtake requirement and we'll connect you with the right desk."

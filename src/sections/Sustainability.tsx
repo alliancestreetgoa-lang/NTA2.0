@@ -15,6 +15,7 @@ export default function Sustainability() {
       <div className="pointer-events-none absolute -right-32 top-0 h-96 w-96 rounded-full bg-[#ff5a1f]/8 blur-3xl" />
       <div className="container-x relative">
         <SectionHeading
+          index="04"
           eyebrow={sustainability.eyebrow}
           title={sustainability.heading}
           intro={sustainability.intro}

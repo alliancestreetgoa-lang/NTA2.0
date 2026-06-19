@@ -10,6 +10,7 @@ export default function WhyNTA() {
     <section id="why" className="bg-[#111114] py-24 sm:py-28">
       <div className="container-x">
         <SectionHeading
+          index="02"
           eyebrow="Why Choose NTA Group"
           title="Built on reach, expertise, and trust."
         />

@@ -8,6 +8,7 @@ export default function Divisions() {
     <section id="divisions" className="bg-[#0a0a0b] py-24 sm:py-28">
       <div className="container-x">
         <SectionHeading
+          index="01"
           eyebrow="Business Divisions"
           title="Six trading verticals, led by chemical fertilizers."
           intro="From fertilizers and grains to petrochemicals and energy, NTA Group operates across the commodities that feed and fuel the world economy."

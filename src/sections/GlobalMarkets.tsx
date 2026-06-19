@@ -9,6 +9,7 @@ export default function GlobalMarkets() {
     <section id="markets" className="bg-[#0a0a0b] py-24 sm:py-28">
       <div className="container-x">
         <SectionHeading
+          index="03"
           eyebrow="Global Markets"
           title="Trading across the world's key commodity corridors."
           intro="NTA Group serves clients and counterparties across major producing and consuming regions, anchored by our trading desk in the UAE."
