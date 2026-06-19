@@ -14,7 +14,7 @@ const img = (id: string) => `${U}${id}?auto=format&fit=crop&w=800&q=70`
 
 // Topic image per division (background imagery on the cards / detail heroes).
 const divisionImages: Record<string, string> = {
-  fertilizers: img('1500382017468-9049fed747ef'), // green agricultural field
+  fertilizers: '/images/fertilizers-field.png', // tractor spraying a crop field (local asset)
   grains: img('1574323347407-f5e1ad6d020b'), // wheat
   petrochemicals: img('1584060330377-3fd93ef4e991'), // petrochemical plant — distillation column + pipework
   'crude-oil': img('1598114335556-119dbed6b051'), // oil pumpjack in a field
