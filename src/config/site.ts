@@ -18,7 +18,7 @@ const divisionImages: Record<string, string> = {
   grains: '/images/grains.png', // grains, cereals & legumes assortment (local asset)
   petrochemicals: '/images/petrochemicals.png', // petrochemical plant at night (local asset)
   'crude-oil': '/images/crude-oil.png', // crude oil barrels, tanker & pumpjacks at sunset (local asset)
-  'refined-oil': img('1588011930968-eadac80e6a5a'), // oil refinery towers at dusk
+  'refined-oil': '/images/refined-oil.png', // refined fuel storage tank farm at dusk (local asset)
   lng: '/images/lng-tanks.webp', // LNG storage spheres plant (local asset)
 }
 
