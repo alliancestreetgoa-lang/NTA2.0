@@ -21,10 +21,10 @@ export default function DivisionPage() {
           src={division.image}
           alt=""
           aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover opacity-[0.65]"
+          className="absolute inset-0 h-full w-full object-cover opacity-95"
         />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0a0a0b] via-[#0a0a0b]/72 to-[#0a0a0b]/30" />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0a0b] via-transparent to-[#0a0a0b]/45" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0a0a0b] via-[#0a0a0b]/55 to-[#0a0a0b]/5" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0a0b] via-transparent to-[#0a0a0b]/25" />
         <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-[#ff5a1f]/10 blur-3xl" />
         <div className="container-x relative z-10">
           <Reveal>
