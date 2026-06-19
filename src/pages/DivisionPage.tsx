@@ -16,7 +16,7 @@ export default function DivisionPage() {
   return (
     <>
       {/* Hero with full-screen topic image */}
-      <section className="relative flex min-h-[88vh] items-center overflow-hidden bg-[#0a0a0b] pb-16 pt-32 sm:pt-40">
+      <section className="relative flex min-h-[100svh] items-center overflow-hidden bg-[#0a0a0b] pb-16 pt-28 sm:pt-32">
         <img
           src={division.image}
           alt=""
