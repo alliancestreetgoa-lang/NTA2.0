@@ -23,8 +23,8 @@ const STARS = [
 ]
 
 const BALL_SHADOW =
-  '0 0 20px rgba(255,255,255,0.2),-5px 0 8px #c3f4ff inset,15px 2px 25px #000 inset,' +
-  '-24px -2px 34px #c3f4ff99 inset,250px 0 44px #00000066 inset,150px 0 38px #000000aa inset'
+  '0 0 26px rgba(255,255,255,0.25),-6px 0 10px #c3f4ff inset,12px 2px 22px #00000088 inset,' +
+  '-24px -2px 34px #c3f4ffbb inset,250px 0 70px #00000033 inset,150px 0 60px #00000055 inset'
 
 export default function Globe({ size = 250, className, style }: GlobeProps) {
   const scale = size / 250
@@ -52,6 +52,7 @@ export default function Globe({ size = 250, className, style }: GlobeProps) {
                 "url('https://pub-940ccf6255b54fa799a9b01050e6c227.r2.dev/globe.jpeg')",
               backgroundSize: 'cover',
               backgroundPosition: 'left',
+              filter: 'brightness(1.5) contrast(1.06) saturate(1.18)',
               animation: 'earthRotate 30s linear infinite',
             }}
           >
