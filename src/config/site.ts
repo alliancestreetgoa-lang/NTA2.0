@@ -23,7 +23,7 @@ const divisionImages: Record<string, string> = {
   petrochemicals: asset('images/petrochemicals.png'), // petrochemical plant at night (local asset)
   'crude-oil': asset('images/crude-oil.png'), // crude oil barrels, tanker & pumpjacks at sunset (local asset)
   'refined-oil': asset('images/refined-oil.png'), // refined fuel storage tank farm at dusk (local asset)
-  lng: asset('images/lng-tanks.webp'), // LNG storage spheres plant (local asset)
+  lng: asset('images/lng-plant.png'), // LNG storage spheres plant (local asset)
 }
 
 const iconMap: Record<string, LucideIcon> = {
