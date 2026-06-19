@@ -1,98 +1,80 @@
-import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, ChevronDown } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { hero } from '../config/site'
 import { useReducedMotion } from '../hooks/useReducedMotion'
 import HeroCanvas from './HeroCanvas'
 
+const TICKER = [
+  'UREA', 'DAP', 'NPK', 'POTASH (MOP)', 'AMMONIA', 'LNG', 'NATURAL GAS', 'GASOIL',
+  'JET A-1', 'NAPHTHA', 'BRENT', 'WTI', 'METHANOL', 'POLYETHYLENE', 'WHEAT', 'SOYBEANS',
+]
+
 /**
- * Full-screen hero.
- * Primary layer: looped/muted stock video with a navy gradient overlay.
- * Fallback layer (animated canvas) shows when video errors, on small screens,
- * or under prefers-reduced-motion (rendered as a single static frame).
+ * Full-bleed cinematic hero: the 3D night-earth globe fills the screen, a mono
+ * kicker sits top-left, the headline is pinned low-left, and a scrolling mono
+ * commodity ticker runs across the very bottom.
  */
 export default function Hero() {
   const reduced = useReducedMotion()
-  const videoRef = useRef<HTMLVideoElement | null>(null)
-  const [videoOk, setVideoOk] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
-
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 767px)')
-    setIsMobile(mq.matches)
-    const onChange = (e: MediaQueryListEvent) => setIsMobile(e.matches)
-    mq.addEventListener('change', onChange)
-    return () => mq.removeEventListener('change', onChange)
-  }, [])
-
-  // Use video only when allowed; otherwise the canvas carries the hero.
-  const useVideo = !reduced && !isMobile
 
   return (
     <section
       id="top"
-      className="relative flex min-h-[100svh] items-center overflow-hidden bg-[#0a0a0b] text-white"
+      className="relative flex min-h-[100svh] flex-col overflow-hidden bg-[#0a0a0b] text-white"
     >
-      {/* Background media */}
+      {/* Full-bleed globe */}
       <div className="absolute inset-0">
-        {/* Canvas always present as base layer / fallback */}
         <HeroCanvas animate={!reduced} />
-
-        {useVideo && (
-          <video
-            ref={videoRef}
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
-              videoOk ? 'opacity-100' : 'opacity-0'
-            }`}
-            src={hero.videoSrc}
-            poster={hero.poster}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            onCanPlay={() => setVideoOk(true)}
-            onError={() => setVideoOk(false)}
-            aria-hidden="true"
-          />
-        )}
-
-        {/* Gradient overlays — opaque behind text (left), clear over the globe (right) */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0a0a0b] from-15% via-[#0a0a0b]/45 via-45% to-transparent" />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0a0b]/60 via-transparent to-transparent" />
+        {/* Legibility overlays: darker at the bottom (headline) and left */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0a0b] via-[#0a0a0b]/15 to-[#0a0a0b]/25" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0a0a0b]/75 via-transparent to-transparent" />
       </div>
 
-      {/* Content (wrapper lets pointer events fall through to the globe; text/buttons re-enable) */}
-      <div className="container-x pointer-events-none relative z-10 py-28">
-        <div className="max-w-3xl [&_a]:pointer-events-auto">
-          <p className="eyebrow mb-6 animate-fade-up">/ Global Commodity Trading</p>
-          <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.92] tracking-[-0.04em] text-balance sm:text-7xl lg:text-[5.6rem]">
-            <span className="text-white">Powering Global Trade Through </span>
-            <span className="text-[#ff5a1f]">Energy &amp; Agricultural Commodities</span>
-          </h1>
-          <p className="mt-7 max-w-xl text-base leading-relaxed text-[#cfc9bd] sm:text-lg">
-            {hero.subhead}
-          </p>
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Link to={hero.primaryCta.href} className="btn-gold group">
-              {hero.primaryCta.label}
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </Link>
-            <a href={hero.secondaryCta.href} className="btn-ghost">
-              {hero.secondaryCta.label}
-            </a>
-          </div>
+      {/* Top-left kicker */}
+      <div className="container-x pointer-events-none relative z-10 pt-28">
+        <p className="eyebrow">/ EST. 2014 — UAE — GLOBAL COMMODITY TRADING</p>
+      </div>
+
+      <div className="flex-1" />
+
+      {/* Headline pinned low-left */}
+      <div className="container-x pointer-events-none relative z-10 pb-9 [&_a]:pointer-events-auto">
+        <h1 className="font-display max-w-4xl text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.04em] text-balance sm:text-6xl lg:text-7xl">
+          <span className="text-white">Powering Global Trade Through </span>
+          <span className="text-[#ff5a1f]">Energy &amp; Agri Commodities</span>
+        </h1>
+        <p className="mt-6 max-w-xl text-sm leading-relaxed text-[#cfc9bd] sm:text-base">
+          {hero.subhead}
+        </p>
+        <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <Link to={hero.primaryCta.href} className="btn-gold group">
+            {hero.primaryCta.label}
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </Link>
+          <a href={hero.secondaryCta.href} className="btn-ghost">
+            {hero.secondaryCta.label}
+          </a>
         </div>
       </div>
 
-      {/* Scroll cue */}
-      <a
-        href="#about"
-        aria-label="Scroll to About"
-        className="absolute bottom-7 left-1/2 z-10 -translate-x-1/2 text-white/50 transition-colors hover:text-[#ff5a1f]"
+      {/* Bottom ticker bar */}
+      <div
+        className="relative z-10 overflow-hidden border-t border-white/10 bg-[#0a0a0b]/85 backdrop-blur"
+        aria-hidden="true"
       >
-        <ChevronDown className={`h-6 w-6 ${reduced ? '' : 'animate-cue'}`} />
-      </a>
+        <div className="nta-marquee py-3">
+          {[...TICKER, ...TICKER].map((t, i) => (
+            <span
+              key={i}
+              className="mx-5 inline-flex items-center gap-2 font-mono text-xs tracking-[0.05em] text-white/70"
+              style={{ fontFamily: "'Space Mono', monospace" }}
+            >
+              <span className="text-[#ff5a1f]">◆</span>
+              {t}
+            </span>
+          ))}
+        </div>
+      </div>
     </section>
   )
 }

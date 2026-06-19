@@ -225,9 +225,11 @@ export default function HeroCanvas({ animate = true }: { animate?: boolean }) {
       renderer.setSize(w, h, false)
       camera.aspect = w / h
       camera.updateProjectionMatrix()
+      // Full-bleed: large globe, nudged up/right so the lower-left stays open
+      // for the pinned headline.
       const wide = w >= 1024
-      world.scale.setScalar(wide ? 2.7 : Math.min(2.2, (w / 520) * 2))
-      world.position.set(wide ? 2.1 : 0.4, wide ? -0.1 : 0.8, 0)
+      world.scale.setScalar(wide ? 3.4 : Math.min(2.8, (w / 420) * 2))
+      world.position.set(wide ? 0.6 : 0.2, wide ? 0.55 : 0.6, 0)
     }
     layout()
     window.addEventListener('resize', layout)

@@ -20,6 +20,20 @@
   background: #ff5a1f;
 }
 
+/* Hero bottom ticker marquee. */
+@keyframes nta-marquee {
+  to { transform: translateX(-50%); }
+}
+.nta-marquee {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: nta-marquee 42s linear infinite;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nta-marquee { animation: none; }
+}
+
 /* Map node pulse. */
 @keyframes nta-pulse-node {
   0%, 100% { opacity: 0.5; transform: scale(0.85); }
