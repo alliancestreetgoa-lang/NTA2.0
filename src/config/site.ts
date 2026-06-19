@@ -19,7 +19,7 @@ const divisionImages: Record<string, string> = {
   petrochemicals: img('1584060330377-3fd93ef4e991'), // petrochemical plant — distillation column + pipework
   'crude-oil': img('1598114335556-119dbed6b051'), // oil pumpjack in a field
   'refined-oil': img('1588011930968-eadac80e6a5a'), // oil refinery towers at dusk
-  lng: '/images/lng-terminal.jpg', // LNG carrier at terminal (local asset)
+  lng: '/images/lng-tanks.webp', // LNG storage spheres plant (local asset)
 }
 
 const iconMap: Record<string, LucideIcon> = {
