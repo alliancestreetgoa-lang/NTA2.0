@@ -8,12 +8,11 @@ export default function Footer() {
       <div className="hairline" />
       <div className="container-x grid gap-10 py-16 md:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-1">
-          <span className="flex items-center gap-2.5 font-display text-lg font-bold tracking-tight">
-            <span className="grid h-8 w-8 place-items-center rounded-sm bg-[#ff5a1f] text-sm font-extrabold text-[#0a0a0b]">
-              N
-            </span>
-            NTA<span className="text-[#ff5a1f]">Group</span>
-          </span>
+          <img
+            src={`${import.meta.env.BASE_URL}images/logo-mark.png`}
+            alt="NTA Group"
+            className="h-11 w-auto"
+          />
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-[#8b97a5]">
             {company.tagline}. A global trading house bridging producers and markets across energy
             and agricultural commodities.

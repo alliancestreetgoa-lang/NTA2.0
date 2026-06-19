@@ -6,12 +6,11 @@ import { useScrolled } from '../hooks/useScrolled'
 
 function Logo() {
   return (
-    <span className="flex items-center gap-2.5 font-display text-lg font-bold tracking-tight text-white">
-      <span className="grid h-8 w-8 place-items-center rounded-sm bg-[#ff5a1f] font-display text-sm font-extrabold text-[#0a0a0b]">
-        N
-      </span>
-      NTA<span className="text-[#ff5a1f]">Group</span>
-    </span>
+    <img
+      src={`${import.meta.env.BASE_URL}images/logo-mark.png`}
+      alt="NTA Group"
+      className="h-9 w-auto sm:h-10"
+    />
   )
 }
 
